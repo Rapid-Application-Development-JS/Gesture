@@ -1,38 +1,30 @@
-document.addEventListener('DOMContentLoaded', function () {
-    var $div = document.querySelector('div');
-    gesture = new GestureTracker($div);
 
-    var doubleguard = function (callback) {
-        return function (e) {
-            var delay = 1000;
-            var self = this;
-            var timoutID;
+    var $div = document.querySelector('#pointer');
+    var $console = document.querySelector('#console');
 
-            function doublelistener() {
-                clearTimeout(timoutID);
-                   self.removeEventListener('doubleclick', doublelistener);
-            }
+    var gesture = new GestureTracker($div);
+ //   gesture.setDoubleGuardState(true);
+ //   gesture.GESTURE_EVENTS.
+ //   $div.addEventListener(gesture.GESTURE_EVENTS.doubletap, function () {
+ //     //  console.log('doubletap');
+ //       console.innerHTML = getTime()+': '+gesture.GESTURE_EVENTS.doubletap+'\n'+ console.innerHTML;
+ //   });
+ //   $div.addEventListener(gesture.GESTURE_EVENTS.tap, function () {
+ //       console.innerHTML = getTime()+': '+gesture.GESTURE_EVENTS.tap+ '\n'+ console.innerHTML;
+ //   });
+    for(var eventName in gesture.GESTURE_EVENTS){
+        $div.addEventListener(eventName, function (event) {
+            $console.innerHTML = getTime()+': '+event.type+ '\n'+ $console.innerHTML;
+        }, false);
+    }
 
-            // attach to element doubleclick listener
-            this.addEventListener('doubleclick', doublelistener, false);
+    function getTime() {
+        var currentdate = new Date();
+        return ((currentdate.getHours()<10) ? "0"+currentdate.getHours() : currentdate.getHours()) + ":"
+            + ((currentdate.getMinutes()<10) ? "0" + currentdate.getMinutes() : currentdate.getMinutes())+":"
+            + ((currentdate.getSeconds()<10) ? "0"+currentdate.getSeconds() : currentdate.getSeconds());
+    }
 
-            // delay callback
-            timoutID = setTimeout(function () {
-                self.removeEventListener('doubleclick', doublelistener);
-                callback.apply(self, e);
-            }, delay);
-        };
-    };
-
-    $div.addEventListener('click', doubleguard(function(){console.log(this)}), false);
-
-    $div.addEventListener('doubletap', function () {
-        console.log('doubletap');
-    });
-    $div.addEventListener('longtap', function () {
-        console.log('longtap');
-    });
-    $div.addEventListener('tap', function () {
-        console.log('tap');
-    });
-}, false);
+    function onChange(){
+        gesture.setDoubleGuardState(document.getElementById('checkbox').checked);
+    }

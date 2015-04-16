@@ -10,8 +10,7 @@
     }
 }(this, function () {
     function GestureTracker(element) {
-
-        var attribute, tracker = this;
+        var attribute, doubleGuardState = false, tracker = this;
         this._el = element;
         this.MOVE_LIMIT = 10;
         /**
@@ -47,6 +46,14 @@
             getAddListener(this._el).call(this._el, this.TRACK_EVENTS[attribute], this, false);
         }
 
+        this.setDoubleGuardState = function (key) {
+            doubleGuardState = key;
+        };
+
+        this.getDoubleGuardState = function () {
+            return doubleGuardState;
+        };
+
         this.destroy = function () {
             for (attribute in this.TRACK_EVENTS) {
                 if (this.TRACK_EVENTS.hasOwnProperty(attribute)) {
@@ -72,17 +79,19 @@
         });
     }
 
+
     GestureTracker.prototype = {
 
+        DOUBLE_TAP_TIMEOUT: 300,
         HOLD_TIMEOUT: 350,
         DOUBLE_TAP_TIME_GAP: 300,
 
-        FIRING_EVENTS: {
+        GESTURE_EVENTS: {
             hold: "hold",
             fling: "fling",
             longtap: "longtap",
             tap: "tap",
-            doubletap:"doubletap"
+            doubletap: "doubletap"
         },
 
         TRACK_EVENTS: {
@@ -95,11 +104,8 @@
 
         tracks: {},
 
-        firstDownTime:0,
+        firstDownTime: 0,
 
-        clearFirstDownTime: function(){
-            firstDownTime = 0;
-    },
 
         handleEvent: function (event) {
             switch (event.type) {
@@ -120,7 +126,7 @@
             var gesture = this;
             clearTimeout(this._holdID);
             this._holdID = setTimeout(function () {
-                gesture._fireEvent(this.FIRING_EVENTS.hold, event);
+                gesture._fireEvent(this.GESTURE_EVENTS.hold, event);
             }.bind(this), this.HOLD_TIMEOUT);
             this.tracks[event.pointerId] = {
                 start: {
@@ -185,29 +191,45 @@
 
         _checkGesture: function (event) {
             var isMoved, isFling, eventPointerId = event.pointerId, trackPointerId = this.tracks[eventPointerId];
+
             function distance(x1, x2, y1, y2) {
                 return Math.pow(((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)), 0.5);
             }
-                isMoved = Math.abs(distance(trackPointerId.start.clientX, trackPointerId.end.clientX, trackPointerId.start.clientY, trackPointerId.end.clientY)) > 20;
-                isFling = Math.abs(distance(trackPointerId.end.clientX, trackPointerId.pre.clientX, trackPointerId.end.clientY, trackPointerId.pre.clientY)) > 0 && trackPointerId.end.timeStamp - trackPointerId.start.timeStamp > 50;
-                if (isFling) {
-                    this._fireEvent(this.FIRING_EVENTS.fling, event, {
-                        start: trackPointerId.start,
-                        end: trackPointerId.end,
-                        speedX: (trackPointerId.end.clientX - trackPointerId.pre.clientX) / (trackPointerId.end.timeStamp - trackPointerId.pre.timeStamp),
-                        speedY: (trackPointerId.end.clientY - trackPointerId.pre.clientY) / (trackPointerId.end.timeStamp - trackPointerId.pre.timeStamp)
-                    });
-                } else if (!isMoved) {
-                    if (trackPointerId.end.timeStamp - trackPointerId.start.timeStamp > 300) {
-                        this._fireEvent(this.FIRING_EVENTS.longtap, event);
-                    } else if (event.timeStamp - this.firstDownTime < this.DOUBLE_TAP_TIME_GAP) {
-                        this._fireEvent(this.FIRING_EVENTS.doubletap, event);
-                        this.firstDownTime =0;
+
+            isMoved = Math.abs(distance(trackPointerId.start.clientX, trackPointerId.end.clientX, trackPointerId.start.clientY, trackPointerId.end.clientY)) > 20;
+            isFling = Math.abs(distance(trackPointerId.end.clientX, trackPointerId.pre.clientX, trackPointerId.end.clientY, trackPointerId.pre.clientY)) > 0 && trackPointerId.end.timeStamp - trackPointerId.start.timeStamp > 50;
+            if (isFling) {
+                this._fireEvent(this.GESTURE_EVENTS.fling, event, {
+                    start: trackPointerId.start,
+                    end: trackPointerId.end,
+                    speedX: (trackPointerId.end.clientX - trackPointerId.pre.clientX) / (trackPointerId.end.timeStamp - trackPointerId.pre.timeStamp),
+                    speedY: (trackPointerId.end.clientY - trackPointerId.pre.clientY) / (trackPointerId.end.timeStamp - trackPointerId.pre.timeStamp)
+                });
+            } else if (!isMoved) {
+                if (trackPointerId.end.timeStamp - trackPointerId.start.timeStamp > 300) {
+                    this._fireEvent(this.GESTURE_EVENTS.longtap, event);
+                } else if (event.timeStamp - this.firstDownTime < this.DOUBLE_TAP_TIME_GAP) {
+                    if (this.getDoubleGuardState()) {
+                        clearTimeout(this._deferredId);
+                    }
+                    this._fireDeferredEvent(this.GESTURE_EVENTS.doubletap, event);
+                } else {
+                    this.firstDownTime = event.timeStamp;
+                    if (this.getDoubleGuardState()) {
+                        this._deferredId = setTimeout(function () {
+                            this._fireDeferredEvent(this.GESTURE_EVENTS.tap, event);
+                            clearTimeout(this._deferredId);
+                        }.bind(this), this.DOUBLE_TAP_TIMEOUT);
                     } else {
-                        this._fireEvent(this.FIRING_EVENTS.tap, event);
-                        this.firstDownTime = event.timeStamp;
+                        this._fireEvent(this.GESTURE_EVENTS.tap, event);
                     }
                 }
+            }
+        },
+
+        _fireDeferredEvent: function(type, event){
+            this._fireEvent(type, event);
+            this.firstDownTime = 0;
         },
 
         _fireEvent: function (type, event, addiction) {
@@ -226,7 +248,6 @@
                     }
                 }
             }
-
             event.target.dispatchEvent(customEvent);
         }
     };
