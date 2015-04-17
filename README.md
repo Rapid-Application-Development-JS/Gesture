@@ -16,3 +16,25 @@ Provide tap-events for DOM elements:
 Now this events have native support only in IE 11 and newer versions.
 You have to use mouse event wrapper that provides needed events for working with others browsers. We recommend use our wrapper
 [Pointer](https://github.com/Rapid-Application-Development-JS/Pointer)
+###Initialization
+
+You should init `GestureTracker` with DOM element for adding gestures to this element.
+```javascript
+var $div = document.querySelector('#pointer');
+var gesture = new GestureTracker($div);
+```
+###Add event listener
+`GesterTraker` has object `GESTURE_EVENTS` that contains string fields with names of gesture events:
+```javascript
+gesture.GESTURE_EVENTS
+```
+####Example
+```javascript
+$div.addEventListener(gesture.GESTURE_EVENTS.tap, function (event) {
+// some code
+});
+```
+###Double Guard
+`Double tap` event has two modes: enable/disable double guard.
+**As default double guard is disabled.**
+In this case, if you are subscribed to `tap` and `double tap` events, when user makes `double tap` `GestureTracker` will broadcast both events (`Tap` event for first tap, `Double Tap` for second tap)
