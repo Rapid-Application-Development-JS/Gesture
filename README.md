@@ -48,4 +48,4 @@ In this case, tap event will be broadcast with delay (as default delay = 300ms).
 ```javascript
 gesture.DOUBLE_TAP_TIMEOUT = 500;
 ```
-If you set parameter `true` for `setDoubleGuardState` method gesture tracker will be broadcast **only** `doubletap` event (without `tap` event) if user make it gesture or `tap` event if user make one touch.
+If you set parameter `true` for `setDoubleGuardState` method gesture tracker will be broadcast **only** `doubletap` event (without `tap` event) if user make it gesture, or `tap` event if user make one touch.
