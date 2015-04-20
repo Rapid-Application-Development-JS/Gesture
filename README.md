@@ -13,12 +13,12 @@ Provide tap-events for DOM elements:
 - pointerover
 - pointercancel
 
-Now this events have native support only in IE 11 and newer versions.
-You have to use mouse event wrapper that provides needed events for working with others browsers. We recommend use our wrapper
+Now these events have native support only in IE 11 and newer versions.
+You have to use mouse event wrapper that provides needed events for working with others browsers. We recommend to use our wrapper
 [Pointer](https://github.com/Rapid-Application-Development-JS/Pointer)
 ###Initialization
 
-You should init `GestureTracker` with DOM element for adding gestures to this element.
+You should init `GestureTracker` with DOM element to add gestures to this element.
 ```javascript
 var $div = document.querySelector('#pointer');
 var gesture = new GestureTracker($div);
@@ -43,9 +43,9 @@ You should call method `setDoubleGuardState` with parameter `true` for enabled d
 ```javascript
 gesture.setDoubleGuardState(true);
 ```
-In this case, tap event will be broadcast with delay (as default delay = 300ms). You can change this value, you should use DOUBLE_TAP_TIMEOUT field for that.
+In this case, tap event will be broadcasted with a delay (as a default delay = 300ms). You can change this value, you should use DOUBLE_TAP_TIMEOUT field for this purpose.
 
 ```javascript
 gesture.DOUBLE_TAP_TIMEOUT = 500;
 ```
-If you set parameter `true` for `setDoubleGuardState` method - gesture tracker will be broadcast **only** `doubletap` event (without `tap` event) if user make it gesture, or `tap` event if user make one touch.
+If you set parameter `true` for `setDoubleGuardState` method - gesture tracker will broadcast **only** `doubletap` event (without `tap` event) if user makes it gesture, or `tap` event if user makes one touch.
