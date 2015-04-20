@@ -37,4 +37,15 @@ $div.addEventListener(gesture.GESTURE_EVENTS.tap, function (event) {
 ###Double Guard
 `Double tap` event has two modes: enable/disable double guard.
 **As default double guard is disabled.**
-In this case, if you are subscribed to `tap` and `double tap` events, when user makes `double tap` `GestureTracker` will broadcast both events (`Tap` event for first tap, `Double Tap` for second tap)
+In this case, if you are subscribed to `tap` and `double tap` events, when user makes `double tap` `GestureTracker` will broadcast both events (`Tap` event for first tap, `Double Tap` for second tap).
+
+You should call method `setDoubleGuardState` with parameter `true` for enabled double guard
+```javascript
+gesture.setDoubleGuardState(true);
+```
+In this case, tap event will be broadcast with delay (as default delay = 300ms). You can change this value, you should use DOUBLE_TAP_TIMEOUT field for that.
+
+```javascript
+gesture.DOUBLE_TAP_TIMEOUT = 500;
+```
+If you set parameter `true` for `setDoubleGuardState` method gesture tracker will be broadcast **only** `doubletap` event (without `tap` event) if user make it gesture or `tap` event if user make one touch.
