@@ -1,4 +1,3 @@
-
     var $div = document.querySelector('#pointer');
     var $console = document.querySelector('#console');
 
@@ -7,7 +6,9 @@
 
     for(var eventName in gesture.GESTURE_EVENTS){
         $div.addEventListener(gesture.GESTURE_EVENTS[eventName], function (event) {
-            $console.innerHTML = getTime()+': '+event.type+ '\n'+ $console.innerHTML;
+            var $eventElement = document.createElement('div');
+            $eventElement.innerHTML = getTime()+': ' + event.type;
+            $console.insertBefore($eventElement, $console.firstChild);
         }, false);
     }
 
