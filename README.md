@@ -5,6 +5,8 @@ Gesture events are built on top of the W3C Pointer Events model. Use gesture eve
 
 [Example](http://rapid-application-development-js.github.io/Gesture/)
 
+---
+
 Now module provides next tap-events: 
 - tap
 - longtap
