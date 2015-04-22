@@ -4,17 +4,9 @@
 
     var pointer = new PointerTracker($div);
     var gesture = new GestureTracker($div);
- //   gesture.setDoubleGuardState(true);
- //   gesture.GESTURE_EVENTS.
- //   $div.addEventListener(gesture.GESTURE_EVENTS.doubletap, function () {
- //     //  console.log('doubletap');
- //       console.innerHTML = getTime()+': '+gesture.GESTURE_EVENTS.doubletap+'\n'+ console.innerHTML;
- //   });
- //   $div.addEventListener(gesture.GESTURE_EVENTS.tap, function () {
- //       console.innerHTML = getTime()+': '+gesture.GESTURE_EVENTS.tap+ '\n'+ console.innerHTML;
- //   });
+
     for(var eventName in gesture.GESTURE_EVENTS){
-        $div.addEventListener(eventName, function (event) {
+        $div.addEventListener(gesture.GESTURE_EVENTS[eventName], function (event) {
             $console.innerHTML = getTime()+': '+event.type+ '\n'+ $console.innerHTML;
         }, false);
     }
