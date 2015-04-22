@@ -3,6 +3,8 @@ Gesture events are built on top of the W3C Pointer Events model. Use gesture eve
 
 **Note** Gesture works only with one touch. Multitouch mode does not supported yet. If user makes multitouch gesture - first point will be processed, others will be skipped.
 
+[Example](http://rapid-application-development-js.github.io/Gesture/)
+
 Now module provides next tap-events: 
 - tap
 - longtap
