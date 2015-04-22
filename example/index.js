@@ -2,6 +2,7 @@
     var $div = document.querySelector('#pointer');
     var $console = document.querySelector('#console');
 
+    var pointer = new PointerTracker($div);
     var gesture = new GestureTracker($div);
  //   gesture.setDoubleGuardState(true);
  //   gesture.GESTURE_EVENTS.

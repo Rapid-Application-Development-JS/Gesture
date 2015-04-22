@@ -84,7 +84,6 @@
 
         DOUBLE_TAP_TIMEOUT: 300,
         HOLD_TIMEOUT: 350,
-        DOUBLE_TAP_TIME_GAP: 300,
 
         GESTURE_EVENTS: {
             hold: "hold",
@@ -128,6 +127,7 @@
             this._holdID = setTimeout(function () {
                 gesture._fireEvent(this.GESTURE_EVENTS.hold, event);
             }.bind(this), this.HOLD_TIMEOUT);
+
             this.tracks[event.pointerId] = {
                 start: {
                     clientX: event.clientX,
@@ -208,7 +208,7 @@
             } else if (!isMoved) {
                 if (trackPointerId.end.timeStamp - trackPointerId.start.timeStamp > 300) {
                     this._fireEvent(this.GESTURE_EVENTS.longtap, event);
-                } else if (event.timeStamp - this.firstDownTime < this.DOUBLE_TAP_TIME_GAP) {
+                } else if (event.timeStamp - this.firstDownTime < this.DOUBLE_TAP_TIMEOUT) {
                     if (this.getDoubleGuardState()) {
                         clearTimeout(this._deferredId);
                     }
