@@ -2,7 +2,7 @@
   "name": "Gesture",
   "version": "1.0.0",
   "description": "**Provide tap-events for DOM elements**",
-  "main": "gesture.js",
+  "main": "gesture.min.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/Rapid-Application-Development-JS/Gesture.git"
@@ -32,6 +32,10 @@
       "email": "y.luchaninov@mobidev.biz"
     }
   ],
+  "scripts": {
+    "test": "echo \"no test required\" && exit 1",
+    "build": "uglifyjs gesture.js --compress --mangle --screw-ie8 --comments --lint --source-map gesture.min.js.map --output gesture.min.js"
+  },
   "readmeFilename": "README.md",
   "homepage": "https://github.com/Rapid-Application-Development-JS/Gesture",
   "license": "MIT"
