@@ -97,4 +97,4 @@ $div.addEventListener(gesture.GESTURE_EVENTS.fling, function (event) {
 // some code
 });
 ```
-Object event has specific for filing gesture fields: `speedX` and `speedX` they show speed of finger moving in pixel/ms
+Object event has specific for `fling` gesture fields: `speedX` and `speedX` they show speed of finger moving in pixel/ms
