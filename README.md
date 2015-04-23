@@ -1,7 +1,13 @@
 # Gesture
 Gesture events are built on top of the W3C Pointer Events model. Use gesture events to help recognize and respond to more complex touch-based user interactions without having to capture and interpret individual pointer events yourself
 
+This module resolves issue with delay for click event in mobile browsers. Tap event will be fired immediately when user ups finger.
+
 **Note** Gesture works only with one touch. Multitouch mode does not supported yet. If user makes multitouch gesture - first point will be processed, others will be skipped.
+
+[Example](http://rapid-application-development-js.github.io/Gesture/)
+
+---
 
 Now module provides next tap-events: 
 - tap
@@ -46,7 +52,7 @@ $div.addEventListener(gesture.GESTURE_EVENTS.tap, function (event) {
 ####tap
 The most basic gesture recognition is a tap. When a tap is detected, the `GesterTraker` event is fired at the target element of the gesture object. Different from the click event, the tap gesture only fires when a user touches (or presses a mouse button, or touches a pen) down and up without moving. This is useful if you want to differentiate between a user tapping on an element versus dragging the element.
 ####hold
-A hold gesture happens when a user touches down with one finger and holds during 350ms without moving.
+A `hold` gesture happens when a user touches down with one finger and holds during 350ms without moving.
 ```javascript
 $div.addEventListener(gesture.GESTURE_EVENTS.hold, function (event) {
 // some code
@@ -55,6 +61,13 @@ $div.addEventListener(gesture.GESTURE_EVENTS.hold, function (event) {
 You can change hold delay, for this use field `HOLD_TIMEOUT`
 ```javascript
 gesture.HOLD_TIMEOUT = 500; //set hold delay 500ms
+```
+####longtap
+A `longtap` gesture happens when a user touches down with one finger and holds during 300ms or more without moving. Event is fired after a user ups finger.
+```javascript
+$div.addEventListener(gesture.GESTURE_EVENTS.longtap, function (event) {
+// some code
+});
 ```
 ####doubletap
 A `doubletap` gesture happens when a user fast twice touches screen one finger after he ups finger second time.
@@ -77,3 +90,11 @@ In this case, tap event will be broadcasted with a delay (as a default delay = 3
 gesture.DOUBLE_TAP_TIMEOUT = 500;//set double tap delay 500ms
 ```
 If you set parameter `true` for `setDoubleGuardState` method - gesture tracker will broadcast **only** `doubletap` event (without `tap` event) if user makes it gesture, or `tap` event if user makes one touch.
+####fling
+A `fling` gesture happens when a user touches down with one finger and move it. Event is fired after a user ups finger.
+```javascript
+$div.addEventListener(gesture.GESTURE_EVENTS.fling, function (event) {
+// some code
+});
+```
+Object event has specific for `fling` gesture fields: `speedX` and `speedX` they show speed of finger moving in pixel/ms
