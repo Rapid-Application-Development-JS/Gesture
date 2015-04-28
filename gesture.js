@@ -203,7 +203,7 @@
                     start: trackPointerId.start,
                     end: trackPointerId.end,
                     speedX: (trackPointerId.end.clientX - trackPointerId.pre.clientX) / (trackPointerId.end.timeStamp - trackPointerId.pre.timeStamp),
-                    speedX: (trackPointerId.end.clientY - trackPointerId.pre.clientY) / (trackPointerId.end.timeStamp - trackPointerId.pre.timeStamp)
+                    speedY: (trackPointerId.end.clientY - trackPointerId.pre.clientY) / (trackPointerId.end.timeStamp - trackPointerId.pre.timeStamp)
                 });
             } else if (!isMoved) {
                 if (trackPointerId.end.timeStamp - trackPointerId.start.timeStamp > 300) {
