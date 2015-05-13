@@ -1,5 +1,5 @@
 {
-  "name": "Gesture",
+  "name": "rad-gesture",
   "version": "1.0.0",
   "description": "**Provide tap-events for DOM elements**",
   "main": "gesture.min.js",
