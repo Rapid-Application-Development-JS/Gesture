@@ -18,14 +18,15 @@
     }
   ],
   "dependencies": {
-    "radjs-pointer": "^1.*"
+    "radjs-pointer": "*"
   },
   "description": "Provide tap-events for DOM elements",
   "devDependencies": {
     "uglifyjs": "*"
   },
   "directories": {
-    "example": "example"
+    "example": "example",
+    "lib": "source"
   },
   "homepage": "https://github.com/Rapid-Application-Development-JS/Gesture",
   "keywords": [
@@ -56,5 +57,5 @@
     "build-js": "uglifyjs source/gesture.js --compress --mangle --screw-ie8 --comments --lint --source-map release/gesture.min.js.map --output release/gesture.min.js",
     "test": "echo \"no test required\" && exit 1"
   },
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

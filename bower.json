@@ -17,7 +17,7 @@
     }
   ],
   "dependencies": {
-    "radjs-pointer": "^1.*"
+    "radjs-pointer": "*"
   },
   "description": "Provide tap-events for DOM elements",
   "devDependencies": {
@@ -52,5 +52,5 @@
     "node"
   ],
   "name": "radjs-gesture",
-  "version": "1.0.0"
+  "version": "1.0.1"
 }
