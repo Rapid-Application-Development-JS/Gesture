@@ -1,35 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-    <meta name="format-detection" content="telephone=no">
-    <title>Gesture</title>
-    <link rel="stylesheet" href="theme/css/main.css" type="text/css"/>
-    <link rel="stylesheet" href="layout.css" type="text/css"/>
-    <script src="libs/pointer.min.js"></script>
-    <script src="../gesture.js"></script>
-
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+	<meta name="format-detection" content="telephone=no">
+	<title>Gesture</title>
+	<link rel="stylesheet" href="theme/css/main.css" type="text/css"/>
+	<link rel="stylesheet" href="layout.css" type="text/css"/>
+	<script src="libs/pointer.min.js"></script>
+	<script src="../release/gesture.min.js"></script>
 </head>
 <body>
 <div class="main">
-    <div class="section pointer-section">
-        <form>
-            <div class="section__header">
-                <label class="topcoat-checkbox" for="checkbox">
-                    <input type="checkbox" id="checkbox" onclick='onChange();'/>
-                    <div class="topcoat-checkbox__checkmark"></div>
-                    Enable Double Guard
-                </label>
-            </div>
-        </form>
-        <div id="pointer" class="section__content pointer-wrap">
-            Try gesture here
-        </div>
-    </div>
-    <div class="console-wrapper pointer-console">
-        <div id="console"></div>
-    </div>
+	<div class="section pointer-section">
+		<form>
+			<div class="section__header">
+				<label class="topcoat-checkbox" for="checkbox">
+					<input type="checkbox" id="checkbox" onclick='onChange();'/>
+
+					<div class="topcoat-checkbox__checkmark"></div>
+					Enable Double Guard
+				</label>
+			</div>
+		</form>
+		<div id="pointer" class="section__content pointer-wrap">
+			Try gesture here
+		</div>
+	</div>
+	<div class="console-wrapper pointer-console">
+		<div id="console"></div>
+	</div>
 </div>
 <script src="index.js"></script>
 </body>
