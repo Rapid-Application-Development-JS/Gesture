@@ -12,6 +12,7 @@
   function GestureTracker(element) {
     var attribute, doubleGuardState = false, tracker = this;
     this._el = element;
+    this.version = "1.0.0";
     this.MOVE_LIMIT = 10;
     /**
      * @returns {Number}
