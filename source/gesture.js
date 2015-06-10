@@ -11,6 +11,26 @@
 }(this, function () {
   function GestureTracker(element) {
     var attribute, doubleGuardState = false, tracker = this;
+
+    PanDirection ={
+      horizontal: 'horizontal',
+      vertical: 'vertical',
+      all: 'all'
+    };
+
+    PanOptions = {
+      isPanStartFired : false,
+      threshold:10,
+      direction: PanDirection.all,
+      pointers: 1,
+      isAllowHorizontalDirectional : function(){
+        return this.direction===PanDirection.all||this.direction===PanDirection.horizontal;
+      },
+      isAllowVerticalDirectional : function(){
+        return this.direction===PanDirection.all||this.direction===PanDirection.vertical;
+      }
+    };
+
     this._el = element;
     this.version = "1.0.0";
     this.MOVE_LIMIT = 10;
@@ -82,8 +102,16 @@
       fling: 'fling',
       longtap: 'longtap',
       tap: 'tap',
-      doubletap: 'doubletap'
+      doubletap: 'doubletap',
+      pan: 'pan'
     },
+
+    GESTURE_ACTIONS:{
+      panstart: 'panstart',
+      panmove: 'panmove',
+      panend: 'panend'
+    },
+
     TRACK_EVENTS: {
       up: 'pointerup',
       down: 'pointerdown',
@@ -137,94 +165,119 @@
       };
     },
     _pointerMove: function (event) {
-      var isMovedByX, isMovedByY;
-      if (
-        this.tracks &&
-        this.tracks[event.pointerId] &&
-        event.timeStamp - this.tracks[event.pointerId].last.timeStamp > 10
-      ) {
-        isMovedByX = this.tracks[event.pointerId].last.clientX - this.tracks[event.pointerId].pre.clientX > this.MOVE_LIMIT;
-        isMovedByY = this.tracks[event.pointerId].last.clientY - this.tracks[event.pointerId].pre.clientY > this.MOVE_LIMIT;
+      var isMovedByX, isMovedByY, xSpin, ySpin;
+      if (this.tracks && this.tracks[event.pointerId]) {
+        if(event.timeStamp - this.tracks[event.pointerId].last.timeStamp > 10) {
+          isMovedByX = Math.abs(this.tracks[event.pointerId].last.clientX - this.tracks[event.pointerId].pre.clientX) > this.MOVE_LIMIT;
+          isMovedByY = Math.abs(this.tracks[event.pointerId].last.clientY - this.tracks[event.pointerId].pre.clientY) > this.MOVE_LIMIT;
+          if (isMovedByX || isMovedByY) {
+            clearTimeout(this._holdID);
+          }
+          this.tracks[event.pointerId].pre.clientX = this.tracks[event.pointerId].last.clientX;
+          this.tracks[event.pointerId].pre.clientY = this.tracks[event.pointerId].last.clientY;
+          this.tracks[event.pointerId].pre.timeStamp = this.tracks[event.pointerId].last.timeStamp;
+          this.tracks[event.pointerId].last.clientX = event.clientX;
+          this.tracks[event.pointerId].last.clientY = event.clientY;
+          this.tracks[event.pointerId].last.timeStamp = event.timeStamp;
+        }
+        xSpin = this.tracks[event.pointerId].start.clientX - event.clientX;
+        ySpin = this.tracks[event.pointerId].start.clientY - event.clientY;
+        isMovedByX = Math.abs(xSpin)>PanOptions.threshold&&PanOptions.isAllowHorizontalDirectional();
+        isMovedByY = Math.abs(ySpin)>PanOptions.threshold&&PanOptions.isAllowVerticalDirectional();
         if (isMovedByX || isMovedByY) {
-          clearTimeout(this._holdID);
-        }
-        this.tracks[event.pointerId].pre.clientX = this.tracks[event.pointerId].last.clientX;
-        this.tracks[event.pointerId].pre.clientY = this.tracks[event.pointerId].last.clientY;
-        this.tracks[event.pointerId].pre.timeStamp = this.tracks[event.pointerId].last.timeStamp;
-        this.tracks[event.pointerId].last.clientX = event.clientX;
-        this.tracks[event.pointerId].last.clientY = event.clientY;
-        this.tracks[event.pointerId].last.timeStamp = event.timeStamp;
-      }
-    },
-    _pointerUp: function (event) {
-      clearTimeout(this._holdID);
-      if (!this.tracks || !this.tracks[event.pointerId]) {
-        return;
-      }
-      this.tracks[event.pointerId].end.clientX = event.clientX;
-      this.tracks[event.pointerId].end.clientY = event.clientY;
-      this.tracks[event.pointerId].end.timeStamp = event.timeStamp;
-      this._checkGesture(event);
-      this.tracks[event.pointerId] = null;
-    },
-    _checkGesture: function (event) {
-      var isMoved, isFling, eventPointerId = event.pointerId, trackPointerId = this.tracks[eventPointerId];
+          if (!PanOptions.isPanStartFired) {
 
-      function distance(x1, x2, y1, y2) {
-        return Math.pow(((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)), 0.5);
-      }
-
-      isMoved = Math.abs(distance(trackPointerId.start.clientX, trackPointerId.end.clientX, trackPointerId.start.clientY, trackPointerId.end.clientY)) > 20;
-      isFling = Math.abs(distance(trackPointerId.end.clientX, trackPointerId.pre.clientX, trackPointerId.end.clientY, trackPointerId.pre.clientY)) > 0 && trackPointerId.end.timeStamp - trackPointerId.start.timeStamp > 50;
-      if (isFling) {
-        this._fireEvent(this.GESTURE_EVENTS.fling, event, {
-          start: trackPointerId.start,
-          end: trackPointerId.end,
-          speedX: (trackPointerId.end.clientX - trackPointerId.pre.clientX) / (trackPointerId.end.timeStamp - trackPointerId.pre.timeStamp),
-          speedY: (trackPointerId.end.clientY - trackPointerId.pre.clientY) / (trackPointerId.end.timeStamp - trackPointerId.pre.timeStamp)
-        });
-      } else if (!isMoved) {
-        if (trackPointerId.end.timeStamp - trackPointerId.start.timeStamp > 300) {
-          this._fireEvent(this.GESTURE_EVENTS.longtap, event);
-        } else if (event.timeStamp - this.firstDownTime < this.DOUBLE_TAP_TIMEOUT) {
-          if (this.getDoubleGuardState()) {
-            clearTimeout(this._deferredId);
+            event.action = this.GESTURE_ACTIONS.panstart;
+            this._fireEvent(this.GESTURE_EVENTS.pan, event);
+            PanOptions.isPanStartFired = true;
           }
-          this._fireDeferredEvent(this.GESTURE_EVENTS.doubletap, event);
-        } else {
-          this.firstDownTime = event.timeStamp;
-          if (this.getDoubleGuardState()) {
-            this._deferredId = setTimeout(function () {
-              this._fireDeferredEvent(this.GESTURE_EVENTS.tap, event);
+          else {
+            event.action = this.GESTURE_ACTIONS.panmove;
+            this._fireEvent(this.GESTURE_EVENTS.pan, event);
+            if(isMovedByX){
+              if(xSpin>0){
+                event.action =
+              }
+            }
+          }
+        }
+        if(Math.abs(xSpin)>=PanOptions.threshold&&PanOptions.isAllowHorizontalDirectional()){
+
+        }
+      }
+
+
+        },
+
+      _pointerUp: function (event) {
+        clearTimeout(this._holdID);
+        if (!this.tracks || !this.tracks[event.pointerId]) {
+          return;
+        }
+        this.tracks[event.pointerId].end.clientX = event.clientX;
+        this.tracks[event.pointerId].end.clientY = event.clientY;
+        this.tracks[event.pointerId].end.timeStamp = event.timeStamp;
+        this._checkGesture(event);
+        this.tracks[event.pointerId] = null;
+      },
+      _checkGesture: function (event) {
+        var isMoved, isFling, eventPointerId = event.pointerId, trackPointerId = this.tracks[eventPointerId];
+
+        function distance(x1, x2, y1, y2) {
+          return Math.pow(((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)), 0.5);
+        }
+
+        isMoved = Math.abs(distance(trackPointerId.start.clientX, trackPointerId.end.clientX, trackPointerId.start.clientY, trackPointerId.end.clientY)) > 20;
+        isFling = Math.abs(distance(trackPointerId.end.clientX, trackPointerId.pre.clientX, trackPointerId.end.clientY, trackPointerId.pre.clientY)) > 0 && trackPointerId.end.timeStamp - trackPointerId.start.timeStamp > 50;
+        if (isFling) {
+          this._fireEvent(this.GESTURE_EVENTS.fling, event, {
+            start: trackPointerId.start,
+            end: trackPointerId.end,
+            speedX: (trackPointerId.end.clientX - trackPointerId.pre.clientX) / (trackPointerId.end.timeStamp - trackPointerId.pre.timeStamp),
+            speedY: (trackPointerId.end.clientY - trackPointerId.pre.clientY) / (trackPointerId.end.timeStamp - trackPointerId.pre.timeStamp)
+          });
+        } else if (!isMoved) {
+          if (trackPointerId.end.timeStamp - trackPointerId.start.timeStamp > 300) {
+            this._fireEvent(this.GESTURE_EVENTS.longtap, event);
+          } else if (event.timeStamp - this.firstDownTime < this.DOUBLE_TAP_TIMEOUT) {
+            if (this.getDoubleGuardState()) {
               clearTimeout(this._deferredId);
-            }.bind(this), this.DOUBLE_TAP_TIMEOUT);
+            }
+            this._fireDeferredEvent(this.GESTURE_EVENTS.doubletap, event);
           } else {
-            this._fireEvent(this.GESTURE_EVENTS.tap, event);
+            this.firstDownTime = event.timeStamp;
+            if (this.getDoubleGuardState()) {
+              this._deferredId = setTimeout(function () {
+                this._fireDeferredEvent(this.GESTURE_EVENTS.tap, event);
+                clearTimeout(this._deferredId);
+              }.bind(this), this.DOUBLE_TAP_TIMEOUT);
+            } else {
+              this._fireEvent(this.GESTURE_EVENTS.tap, event);
+            }
           }
         }
-      }
-    },
-    _fireDeferredEvent: function (type, event) {
-      this._fireEvent(type, event);
-      this.firstDownTime = 0;
-    },
-    _fireEvent: function (type, event, addiction) {
-      var attr, customEvent = document.createEvent('MouseEvents');
-      customEvent.initMouseEvent(type, true, true, window, 1, event.screenX, event.screenY,
-        event.clientX, event.clientY, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button,
-        event.relatedTarget);
-      // event attributes
-      customEvent.pointerId = this.touchID;
-      customEvent.pointerType = event.pointerType;
-      if (addiction) {
-        for (attr in addiction) {
-          if (addiction.hasOwnProperty(attr)) {
-            customEvent[attr] = addiction[attr];
+      },
+      _fireDeferredEvent: function (type, event) {
+        this._fireEvent(type, event);
+        this.firstDownTime = 0;
+      },
+      _fireEvent: function (type, event, addiction) {
+        var attr, customEvent = document.createEvent('MouseEvents');
+        customEvent.initMouseEvent(type, true, true, window, 1, event.screenX, event.screenY,
+          event.clientX, event.clientY, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button,
+          event.relatedTarget);
+        // event attributes
+        customEvent.pointerId = this.touchID;
+        customEvent.pointerType = event.pointerType;
+        if (addiction) {
+          for (attr in addiction) {
+            if (addiction.hasOwnProperty(attr)) {
+              customEvent[attr] = addiction[attr];
+            }
           }
         }
+        event.target.dispatchEvent(customEvent);
       }
-      event.target.dispatchEvent(customEvent);
-    }
-  };
+    };
   return GestureTracker;
 }));
