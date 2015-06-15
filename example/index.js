@@ -7,8 +7,20 @@ for (var eventName in gesture.GESTURE_EVENTS) {
     var $eventElement = document.createElement('div');
     $eventElement.innerHTML = getTime() + ': ' + event.type;
     $console.insertBefore($eventElement, $console.firstChild);
+    console.log(event);
   }, false);
 }
+
+//$div.addEventListener(_gesture.GESTURE_EVENTS.pinch, function (event) {
+////    var $eventElement = document.createElement('div');
+////    $eventElement.innerHTML = getTime() + ': ' + event.type;
+////    $console.insertBefore($eventElement, $console.firstChild);
+// // if (event.action !== _gesture.GESTURE_ACTIONS.panmove)
+//  {
+//    console.log(event);
+//  }
+//}, false);
+
 function getTime() {
   var currentdate = new Date();
   return ((currentdate.getHours() < 10) ? "0" + currentdate.getHours() : currentdate.getHours()) + ":"

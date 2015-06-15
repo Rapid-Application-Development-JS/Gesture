@@ -10,24 +10,66 @@
   }
 }(this, function () {
   function GestureTracker(element) {
+
+
+    /////////////////////////////////////////
+    /////////////////////////////////////////
+  /////////////////////////////////////////
+
     var attribute, doubleGuardState = false, tracker = this;
 
-    PanDirection ={
+    this.PanDirection ={
       horizontal: 'horizontal',
       vertical: 'vertical',
-      all: 'all'
+      all: 'all',
+      directionType: {
+        left: 'left',
+        right: 'right',
+        up: 'up',
+        down: 'down'
+      }
     };
 
-    PanOptions = {
-      isPanStartFired : false,
-      threshold:10,
-      direction: PanDirection.all,
+    this.PinchOptions = {
+      isPinchStartFired: false,
+      startDistance: undefined,
+      points : [],
+      threshold: 10
+    },
+
+    this.PanOptions = {
+      isPanStartFired: false,
+      threshold: 10,
+      direction: tracker.PanDirection.all,
       pointers: 1,
-      isAllowHorizontalDirectional : function(){
-        return this.direction===PanDirection.all||this.direction===PanDirection.horizontal;
+      isAllowHorizontalDirectional: function () {
+        return this.direction === tracker.PanDirection.all || this.direction === tracker.PanDirection.horizontal;
       },
-      isAllowVerticalDirectional : function(){
-        return this.direction===PanDirection.all||this.direction===PanDirection.vertical;
+      isAllowVerticalDirectional: function () {
+        return this.direction === tracker.PanDirection.all || this.direction === tracker.PanDirection.vertical;
+      },
+      getDirection: function (xSpin, ySpin) {
+        if (Math.abs(xSpin) > Math.abs(ySpin)) {
+          if (this.isAllowHorizontalDirectional()) {
+            if (xSpin > 0) {
+              return tracker.PanDirection.directionType.left;
+            } else {
+              return tracker.PanDirection.directionType.right;
+            }
+          } else {
+            return undefined;
+          }
+        } else {
+          if (this.isAllowVerticalDirectional()) {
+            if (ySpin > 0) {
+              return tracker.PanDirection.directionType.up;
+            } else {
+              return tracker.PanDirection.directionType.down;
+            }
+          } else {
+            return undefined;
+          }
+        }
       }
     };
 
@@ -60,10 +102,10 @@
       }, false)
     }
 
-    for (attribute in this.TRACK_EVENTS) {
+    for (field in this.TRACK_EVENTS) {
       //noinspection JSUnfilteredForInLoop
-      this._el.addEventListener(this.TRACK_EVENTS[attribute], this, false);
-      getAddListener(this._el).call(this._el, this.TRACK_EVENTS[attribute], this, false);
+      this._el.addEventListener(this.TRACK_EVENTS[field], this, false);
+      getAddListener(this._el).call(this._el, this.TRACK_EVENTS[field], this, false);
     }
     this.setDoubleGuardState = function (key) {
       doubleGuardState = key;
@@ -72,9 +114,9 @@
       return doubleGuardState;
     };
     this.destroy = function () {
-      for (attribute in this.TRACK_EVENTS) {
-        if (this.TRACK_EVENTS.hasOwnProperty(attribute)) {
-          getRemoveEventListener(this._el).call(this._el, this.TRACK_EVENTS[attribute], this);
+      for (field in this.TRACK_EVENTS) {
+        if (this.TRACK_EVENTS.hasOwnProperty(field)) {
+          getRemoveEventListener(this._el).call(this._el, this.TRACK_EVENTS[field], this);
         }
       }
       this._el = null;
@@ -92,6 +134,53 @@
       dpi = ppi * _getDevicePixelRatio() * screen.pixelDepth / 24;
       tracker.MOVE_LIMIT = dpi / 6;
     });
+
+    this._calculationStartAverageDistance = function() {
+      var count = 0, sum = 0;
+      for (var i = 0; i !== this.tracks.length; i++) {
+        for (var j = this.tracks.length-i+1; j !== this.tracks.length; j++) {
+          if (i !== j) {
+            this.PinchOptions.points[i]=i;
+            sum += calculateDistance({
+                x: this.tracks[i].start.clientX,
+                y: this.tracks[i].start.clientY
+              },
+              {
+                x: this.tracks[j].start.clientX,
+                y: this.tracks[j].start.clientY
+              });
+            count++;
+          }
+        }
+      }
+      return sum/count;
+    };
+
+    this._calculationCurrentAverageDistance = function() {
+      var count = 0, sum = 0;
+      for (var i = 0; i !== this.tracks.length; i++) {
+        for (var j = i+1; j !== this.tracks.length; j++) {
+          if (i !== j) {
+            this.PinchOptions.points[i]=i;
+            sum += calculateDistance({
+                x: this.tracks[i].last.clientX,
+                y: this.tracks[i].last.clientY
+              },
+              {
+                x: this.tracks[j].last.clientX,
+                y: this.tracks[j].last.clientY
+              });
+            count++;
+          }
+        }
+      }
+      return sum/count;
+    };
+
+    function calculateDistance(point1, point2) {
+      return Math.pow((Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)), 0.5);
+    };
+
   }
 
   GestureTracker.prototype = {
@@ -103,13 +192,24 @@
       longtap: 'longtap',
       tap: 'tap',
       doubletap: 'doubletap',
-      pan: 'pan'
+      pan: 'pan',
+      pinch: 'pinch'
     },
 
-    GESTURE_ACTIONS:{
+    GESTURE_ACTIONS: {
       panstart: 'panstart',
       panmove: 'panmove',
-      panend: 'panend'
+      panend: 'panend',
+      panleft: 'panleft',
+      panright: 'panright',
+      panup: 'panup',
+      pandown: 'pandown',
+
+      pinchstart: 'pinchstart',
+      pinchmove: 'pinchmove',
+      pinchend: 'pinchend',
+      pinchin: 'pinchin',
+      pinchout: 'pinchout'
     },
 
     TRACK_EVENTS: {
@@ -136,6 +236,7 @@
       }
     },
     _pointerDown: function (event) {
+      this.touchID = event.pointerId;
       var gesture = this;
       clearTimeout(this._holdID);
       this._holdID = setTimeout(function () {
@@ -164,10 +265,11 @@
         }
       };
     },
+
     _pointerMove: function (event) {
       var isMovedByX, isMovedByY, xSpin, ySpin;
       if (this.tracks && this.tracks[event.pointerId]) {
-        if(event.timeStamp - this.tracks[event.pointerId].last.timeStamp > 10) {
+        if (event.timeStamp - this.tracks[event.pointerId].last.timeStamp > 10) {
           isMovedByX = Math.abs(this.tracks[event.pointerId].last.clientX - this.tracks[event.pointerId].pre.clientX) > this.MOVE_LIMIT;
           isMovedByY = Math.abs(this.tracks[event.pointerId].last.clientY - this.tracks[event.pointerId].pre.clientY) > this.MOVE_LIMIT;
           if (isMovedByX || isMovedByY) {
@@ -180,36 +282,62 @@
           this.tracks[event.pointerId].last.clientY = event.clientY;
           this.tracks[event.pointerId].last.timeStamp = event.timeStamp;
         }
+
         xSpin = this.tracks[event.pointerId].start.clientX - event.clientX;
         ySpin = this.tracks[event.pointerId].start.clientY - event.clientY;
-        isMovedByX = Math.abs(xSpin)>PanOptions.threshold&&PanOptions.isAllowHorizontalDirectional();
-        isMovedByY = Math.abs(ySpin)>PanOptions.threshold&&PanOptions.isAllowVerticalDirectional();
-        if (isMovedByX || isMovedByY) {
-          if (!PanOptions.isPanStartFired) {
+        var eventOptions = {}, direction = this.PanOptions.getDirection(xSpin, ySpin);
+        if (!this.PanOptions.isPanStartFired) {
+          isMovedByX = Math.abs(xSpin) > this.PanOptions.threshold && direction;
+          isMovedByY = Math.abs(ySpin) > this.PanOptions.threshold && direction;
+          if (isMovedByX || isMovedByY) {
+            eventOptions.action = this.GESTURE_ACTIONS.panstart;
+            eventOptions.direction = direction;
+            eventOptions.distansX = xSpin;
+            eventOptions.distansY = ySpin;
+            this._fireEvent(this.GESTURE_EVENTS.pan, event, eventOptions);
+            this.PanOptions.isPanStartFired = true;
+            this.tracks[event.pointerId].start.direction = direction;
 
-            event.action = this.GESTURE_ACTIONS.panstart;
-            this._fireEvent(this.GESTURE_EVENTS.pan, event);
-            PanOptions.isPanStartFired = true;
+            eventOptions.action = this.GESTURE_EVENTS.pan + direction;
+            this._fireEvent(this.GESTURE_EVENTS.pan, event, eventOptions);
+            this.tracks[event.pointerId].start.direction = direction;
           }
-          else {
-            event.action = this.GESTURE_ACTIONS.panmove;
-            this._fireEvent(this.GESTURE_EVENTS.pan, event);
-            if(isMovedByX){
-              if(xSpin>0){
-                event.action =
-              }
+        } else if (direction) {
+          eventOptions.action = this.GESTURE_ACTIONS.panmove;
+          eventOptions.direction = direction;
+          eventOptions.distansX = xSpin;
+          eventOptions.distansY = ySpin;
+          this._fireEvent(this.GESTURE_EVENTS.pan, event, eventOptions);
+
+          if (this.tracks[event.pointerId].start.direction !== direction) {
+            eventOptions.action = this.GESTURE_EVENTS.pan + direction;
+            this._fireEvent(this.GESTURE_EVENTS.pan, event, eventOptions);
+            this.tracks[event.pointerId].start.direction = direction;
+          }
+        }
+
+        if (Object.keys(this.tracks).length > 1) {
+          var currentDistance = this._calculationCurrentAverageDistance(),
+          startDistance = this.PinchOptions.startDistance||this._calculationStartAverageDistance(),
+          zoomSpin = startDistance-currentDistance;
+          if (!this.PinchOptions.isPinchStartFired) {
+            if(Math.abs(zoomSpin)>startDistance*0.05){
+              eventOptions.action = this.GESTURE_ACTIONS.pinchstart;
+              eventOptions.zoom = Math.abs(currentDistance/startDistance);
+              eventOptions.pinchSize = currentDistance;
+              eventOptions.distansY = ySpin;
+              eventOptions.pointsCount = this.tracks.length;
+              this._fireEvent(this.GESTURE_EVENTS.pan, event, eventOptions);
             }
           }
         }
-        if(Math.abs(xSpin)>=PanOptions.threshold&&PanOptions.isAllowHorizontalDirectional()){
-
-        }
       }
+    },
 
 
-        },
 
       _pointerUp: function (event) {
+        var xSpin, ySpin, eventOptions = {};
         clearTimeout(this._holdID);
         if (!this.tracks || !this.tracks[event.pointerId]) {
           return;
@@ -218,8 +346,19 @@
         this.tracks[event.pointerId].end.clientY = event.clientY;
         this.tracks[event.pointerId].end.timeStamp = event.timeStamp;
         this._checkGesture(event);
+        if (this.PanOptions.isPanStartFired) {
+          xSpin = this.tracks[event.pointerId].start.clientX - event.clientX;
+          ySpin = this.tracks[event.pointerId].start.clientY - event.clientY;
+          eventOptions.action = this.GESTURE_ACTIONS.panend;
+          eventOptions.direction = this.PanOptions.getDirection(xSpin, ySpin);
+          eventOptions.distansX = xSpin;
+          eventOptions.distansY = ySpin;
+          this._fireEvent(this.GESTURE_EVENTS.pan, event, eventOptions);
+          this.PanOptions.isPanStartFired = false;
+        }
         this.tracks[event.pointerId] = null;
       },
+
       _checkGesture: function (event) {
         var isMoved, isFling, eventPointerId = event.pointerId, trackPointerId = this.tracks[eventPointerId];
 
@@ -257,10 +396,12 @@
           }
         }
       },
+
       _fireDeferredEvent: function (type, event) {
         this._fireEvent(type, event);
         this.firstDownTime = 0;
       },
+
       _fireEvent: function (type, event, addiction) {
         var attr, customEvent = document.createEvent('MouseEvents');
         customEvent.initMouseEvent(type, true, true, window, 1, event.screenX, event.screenY,
