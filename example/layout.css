@@ -10,7 +10,7 @@
 }
 
 .pointer-section {
-	height: 30%;
+	height: 60%;
 	position: relative;
 }
 
@@ -24,11 +24,16 @@
 }
 
 .pointer-wrap {
-	position: absolute;
-	top: 50px;
-	bottom: 0;
-	left: 0;
-	right: 0;
+	/*position: absolute;*/
+	/*top: 50px;*/
+	/*bottom: 0;*/
+	/*left: 0;*/
+	/*right: 0;*/
+	/*display: inline-block;*/
+	height: 80%;
+	width: 100%;
+	vertical-align: middle;
+	text-align: center;
 	overflow: hidden;
 	background: #454646;
 	font-size: 5em;
@@ -45,8 +50,8 @@
 .pointer-wrap:before {
 	content: '';
 	display: inline-block;
-	height: 100%;
 	vertical-align: middle;
+	height: 100%;
 }
 
 .pointer {
@@ -68,7 +73,7 @@
 
 .pointer-console {
 	position: absolute;
-	top: 30%;
+	top: 60%;
 	bottom: 0;
 	left: 0;
 	right: 0;
