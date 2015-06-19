@@ -116,8 +116,8 @@ div[data-role=view] {
 }
 .form-options .topcoat-radio-button {
     display: block;
-    margin: -20px;
-    padding: 20px;
+    /*margin: -20px;*/
+    padding: 0 20px;
     cursor: pointer;
 }
 

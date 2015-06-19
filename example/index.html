@@ -1,35 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-    <meta name="format-detection" content="telephone=no">
-    <title>Gesture</title>
-    <link rel="stylesheet" href="theme/css/main.css" type="text/css"/>
-    <link rel="stylesheet" href="layout.css" type="text/css"/>
-    <script src="libs/pointer.min.js"></script>
-    <script src="../gesture.js"></script>
-
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+	<meta name="format-detection" content="telephone=no">
+	<title>Gesture</title>
+	<link rel="stylesheet" href="theme/css/main.css" type="text/css"/>
+	<link rel="stylesheet" href="layout.css" type="text/css"/>
+	<link rel="stylesheet" href="index.css" type="text/css"/>
+	<script src="libs/pointer.min.js"></script>
+	<script src="../source/gesture.js"></script>
 </head>
 <body>
 <div class="main">
-    <div class="section pointer-section">
-        <form>
-            <div class="section__header">
-                <label class="topcoat-checkbox" for="checkbox">
-                    <input type="checkbox" id="checkbox" onclick='onChange();'/>
-                    <div class="topcoat-checkbox__checkmark"></div>
-                    Enable Double Guard
-                </label>
-            </div>
-        </form>
-        <div id="pointer" class="section__content pointer-wrap">
-            Try gesture here
-        </div>
-    </div>
-    <div class="console-wrapper pointer-console">
-        <div id="console"></div>
-    </div>
+	<div class="section pointer-section">
+		<form>
+			<div class="section__header">
+				<label class="topcoat-checkbox" for="checkbox">
+					<input type="checkbox" id="checkbox" onclick='onChange();'/>
+
+					<div class="topcoat-checkbox__checkmark"></div>
+					Enable Double Guard
+				</label>
+			</div>
+		</form>
+		<div id="pointer" class="section__content pointer-wrap">
+			<div id="holder" style="background-color: #288edf; width: 100px; height: 100px; display: inline-block; vertical-align: middle"></div>
+		</div>
+	</div>
+	<div class="console-wrapper pointer-console">
+		<div id="console"></div>
+	</div>
+</div>
+<div class="bottom-bar blocks-bottom blocks-holder">
+	<form class="form-options">
+		<ul class="topcoat-list__container block-container animation-list" id="animation-list">
+			<li class="topcoat-list__item block-container__item">
+				<label class="topcoat-radio-button" for="single">
+					<input type="radio" name="animation" id="single" checked onchange="onSingleItemClick()">
+
+					<div class="topcoat-radio-button__checkmark"></div>
+					<span class="radio-label">Single</span>
+				</label>
+			</li>
+
+			<li class="topcoat-list__item block-container__item">
+				<label class="topcoat-radio-button" for="pan">
+					<input type="radio" name="animation" id="pan" onchange="onPanItemClick()">
+
+					<div class="topcoat-radio-button__checkmark"></div>
+					<span class="radio-label">Pan</span>
+				</label>
+			</li>
+
+			<li class="topcoat-list__item block-container__item">
+				<label class="topcoat-radio-button" for="pinch">
+					<input type="radio" name="animation" id="pinch" onchange="onPinchItemClick()">
+
+					<div class="topcoat-radio-button__checkmark"></div>
+					<span class="radio-label">Pinch</span>
+				</label>
+			</li>
+
+			<li class="topcoat-list__item block-container__item">
+				<label class="topcoat-radio-button" for="rotate">
+					<input type="radio" name="animation" id="rotate" onchange="onRotateItemClick()">
+
+					<div class="topcoat-radio-button__checkmark"></div>
+					<span class="radio-label">Rotate</span>
+				</label>
+			</li>
+		</ul>
+	</form>
 </div>
 <script src="index.js"></script>
 </body>

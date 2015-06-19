@@ -1,18 +1,34 @@
 {
-  "name": "Gesture",
-  "version": "1.0.0",
-  "description": "**Provide tap-events for DOM elements**",
-  "main": "gesture.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Rapid-Application-Development-JS/Gesture.git"
-  },
+  "author": "Yuriy Luchaninov <y.luchaninov@mobidev.biz> (http://mobidev.biz/)",
   "bugs": {
     "url": "https://github.com/Rapid-Application-Development-JS/Gesture/issues"
   },
+  "contributors": [
+    {
+      "email": "a.trofimenko@mobidev.biz",
+      "name": "Anton Trofimenko"
+    },
+    {
+      "email": "r.prokofeyv@mobidev.biz",
+      "name": "Roman Prokofeyv"
+    },
+    {
+      "email": "y.luchaninov@mobidev.biz",
+      "name": "Yuriy Luchaninov"
+    }
+  ],
   "dependencies": {
-    "Pointer": "^1.0.0"
+    "radjs-pointer": "*"
   },
+  "description": "Provide tap-events for DOM elements",
+  "devDependencies": {
+    "uglifyjs": "*"
+  },
+  "directories": {
+    "example": "example",
+    "lib": "source"
+  },
+  "homepage": "https://github.com/Rapid-Application-Development-JS/Gesture",
   "keywords": [
     "gesture",
     "fling",
@@ -22,17 +38,24 @@
     "event listener",
     "touch event"
   ],
+  "license": {
+    "type": "MIT",
+    "url": "https://github.com/Rapid-Application-Development-JS/Gesture/blob/master/LICENSE.md"
+  },
+  "main": [
+    "release/gesture.min.js",
+    "release/gesture.min.js.map"
+  ],
+  "name": "radjs-gesture",
+  "private": false,
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rapid-Application-Development-JS/Gesture.git"
+  },
   "scripts": {
+    "build-js": "uglifyjs source/gesture.js --compress --mangle --screw-ie8 --comments --lint --source-map release/gesture.min.js.map --output release/gesture.min.js",
     "test": "echo \"no test required\" && exit 1"
   },
-  "author": "Yuriy Luchaninov <y.luchaninov@mobidev.biz> (http://mobidev.biz/)",
-  "contributors": [
-    {
-      "name": "Yuriy Luchaninov",
-      "email": "y.luchaninov@mobidev.biz"
-    }
-  ],
-  "readmeFilename": "README.md",
-  "homepage": "https://github.com/Rapid-Application-Development-JS/Gesture",
-  "license": "MIT"
+  "version": "1.0.1"
 }
