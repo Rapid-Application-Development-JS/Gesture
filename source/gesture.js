@@ -102,7 +102,6 @@
         _priveosTapTimeStamp,
         _tracks = tracks;
 
-
       _gesture.pointerDown = function (event) {
         _isrecognized = true;
       };
@@ -152,25 +151,34 @@
         _holdTimeout = 500,
         _type = _scope.GESTURE_EVENTS.hold,
         _options = {},
-        _holdID,
+        _holdID = null,
         _tracks = tracks;
 
       _gesture.pointerDown = function (event) {
         clearTimeout(_holdTimeout);
         _holdID = setTimeout(function () {
+          _options.action = "holdstart"
           fireEvent(_type, event, _options);
-          _holdID = null;
+//          _holdID = null;
         }.bind(_gesture), _holdTimeout);
       };
 
       _gesture.pointerMove = function (event) {
-        clearTimeout(_holdID);
-        _holdID = null;
+        if (_holdID) {
+          clearTimeout(_holdID);
+          _options.action = "holdend"
+          fireEvent(_type, event, _options);
+          _holdID = null;
+        }
       };
 
       _gesture.pointerUp = function (event) {
-        clearTimeout(_holdID);
-        _holdID = null;
+        if (_holdID) {
+          clearTimeout(_holdID);
+          _options.action = "holdend"
+          fireEvent(_type, event, _options);
+          _holdID = null;
+        }
       };
     }
 
@@ -612,8 +620,7 @@
         ppi = element.offsetHeight;
         document.body.removeChild(element);
         dpi = ppi * _getDevicePixelRatio() * screen.pixelDepth / 24;
-        MOVE_LIMIT = dpi / 6;
-
+        //MOVE_LIMIT = dpi / 6;
         MOVE_LIMIT = 20;
         _gestures.push(
           new GestureTap(_tracks, _fireEvent),

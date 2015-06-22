@@ -1,9 +1,9 @@
- var $div = document.querySelector('#pointer'),
- $holder = document.querySelector('#holder'),
- $console = document.querySelector('#console'),
-
- pointer = new PointerTracker($div),
- gesture = new GestureTracker($div, init),
+var $div = document.querySelector('#pointer'),
+  $holder = document.querySelector('#holder'),
+  $checkBox = document.getElementById('checkbox'),
+  $header = document.getElementById('header'),
+  pointer = new PointerTracker($div),
+  gesture = new GestureTracker($div, init),
   PanOptions ={
     size:0
   },
@@ -133,7 +133,7 @@ function getTime() {
     + ((currentdate.getSeconds() < 10) ? "0" + currentdate.getSeconds() : currentdate.getSeconds());
 }
 function onChange() {
-  gesture.setDoubleGuardState(document.getElementById('checkbox').checked);
+  gesture.setDoubleGuardState($checkBox.checked);
 }
 
 function onSingleItemClick(){
@@ -141,7 +141,33 @@ function onSingleItemClick(){
   $div.addEventListener(gesture.GESTURE_EVENTS.fling, fling, false);
   $holder.addEventListener(gesture.GESTURE_EVENTS.tap, tap, false);
   $holder.addEventListener(gesture.GESTURE_EVENTS.doubletap, doubletap, false);
-  document.getElementById('checkbox').checked = gesture.getDoubleGuardState();
+  $holder.addEventListener(gesture.GESTURE_EVENTS.hold, hold, false);
+  $checkBox.checked = gesture.getDoubleGuardState();
+  $header.style.opacity = 1;
+
+
+  //newNode.style.animationName = "enterPiece";
+}
+function hold(event){
+  //$holder.style.animation= 'initial';
+  //$holder.style.webkitAnimationName = "";
+  if(event.action === 'holdstart') {
+    $holder.style.backgroundColor = '#FFFF00';
+  }else{
+    $holder.style.backgroundColor = "rgb(40, 142, 223)";
+  }
+  //$holder.style.webkitAnimationPlayState="paused";
+  //$holder.style.webkitAnimationPlayState="running";
+
+  //$holder.style.animationDuration = ".5s";
+  //$holder.style.animationFillMode = "forwards";
+  //$holder.style.animationName = "shake";
+
+
+
+  //$holder.style.animationDuration = "";
+  //$holder.style.animationFillMode ="";
+  //$holder.style.animationName = "";
 }
 
 function onPinchItemClick(){
@@ -160,6 +186,7 @@ function onRotateItemClick(){
 }
 
 function removeEvents(){
+  $header.style.opacity = 0;
   $holder.style.transition ='transform 1s ease-out';
   $holder.style.webkitTransform = "";
   SingleOptions.clear();
