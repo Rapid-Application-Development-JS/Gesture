@@ -32,9 +32,9 @@ function init()
 };
 
 function addLine(event) {
-  var $eventElement = document.createElement('div');
-  $eventElement.innerHTML = getTime() + ': ' + event.type;
-  $console.insertBefore($eventElement, $console.firstChild);
+  //var $eventElement = document.createElement('div');
+  //$eventElement.innerHTML = getTime() + ': ' + event.type;
+  //$console.insertBefore($eventElement, $console.firstChild);
 };
 //============================================================
 //

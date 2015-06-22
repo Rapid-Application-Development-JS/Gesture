@@ -45,12 +45,15 @@
 }
 
 .section {
-	height: 50%;
+	height: 100%;
 }
 
 @media screen and (max-width: 640px) {
 	.block-container__item {
 		width: 50%;
+	}
+	.pointer-wrap {
+		bottom: 100px;
 	}
 
 	.bottom-bar ~ .main {
