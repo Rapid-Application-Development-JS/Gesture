@@ -614,6 +614,7 @@
         dpi = ppi * _getDevicePixelRatio() * screen.pixelDepth / 24;
         MOVE_LIMIT = dpi / 6;
 
+        MOVE_LIMIT = 20;
         _gestures.push(
           new GestureTap(_tracks, _fireEvent),
           new GestureHold(_tracks, _fireEvent),
