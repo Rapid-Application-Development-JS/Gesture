@@ -1,17 +1,28 @@
-var $div = document.querySelector('#pointer');
-var $holder = document.querySelector('#holder');
-var $console = document.querySelector('#console');
-var pointer = new PointerTracker($div);
-var gesture = new GestureTracker($div);
-var transformTranslate ="";
-var flingOptions ={
-  x:0,
-  y:0
-},
+ var $div = document.querySelector('#pointer'),
+ $holder = document.querySelector('#holder'),
+ $console = document.querySelector('#console'),
+
+ pointer = new PointerTracker($div),
+ gesture = new GestureTracker($div, init),
   PanOptions ={
     size:0
   },
-  angle = 180;
+  SingleOptions = {
+    angle: 180,
+    rotateString: '',
+    transformTranslate: '',
+    flingOptions: {
+      x: 0,
+      y: 0
+    },
+    clear: function(){
+      this.angle = 180;
+      this.rotateString = '';
+      this.transformTranslate = '';
+      this.flingOptions.x = 0;
+      this.flingOptions.y = 0;
+    }
+  };
 
 function init()
 {
@@ -36,24 +47,24 @@ function rotate(event){
 function fling(event){
   $holder.style.transition = 'transform ' + (event.duration / 1000) + "s ease-out";
 
-  flingOptions.x += event.end.clientX - event.start.clientX;
-  flingOptions.y += event.end.clientY - event.start.clientY;
+  SingleOptions.flingOptions.x += event.end.clientX - event.start.clientX;
+  SingleOptions.flingOptions.y += event.end.clientY - event.start.clientY;
 
-  flingOptions.x =  $holder.offsetLeft+$holder.offsetWidth+flingOptions.x > $div.offsetWidth ? $div.offsetWidth - ($holder.offsetLeft+$holder.offsetWidth) : flingOptions.x;
-  flingOptions.y = $holder.offsetTop+$holder.offsetHeight+flingOptions.y > $div.offsetHeight ? $div.offsetHeight - ($holder.offsetTop+$holder.offsetHeight): flingOptions.y;
+  SingleOptions.flingOptions.x =  $holder.offsetLeft+$holder.offsetWidth+SingleOptions.flingOptions.x > $div.offsetWidth ? $div.offsetWidth - ($holder.offsetLeft+$holder.offsetWidth) : SingleOptions.flingOptions.x;
+  SingleOptions.flingOptions.y = $holder.offsetTop+$holder.offsetHeight+SingleOptions.flingOptions.y > $div.offsetHeight ? $div.offsetHeight - ($holder.offsetTop+$holder.offsetHeight): SingleOptions.flingOptions.y;
 
-  flingOptions.x = $holder.offsetLeft+flingOptions.x < 0 ? -$holder.offsetLeft : flingOptions.x;
-  flingOptions.y = $holder.offsetTop+flingOptions.y < 0 ? -$holder.offsetTop : flingOptions.y;
-  transformTranslate = 'translate3d(' + flingOptions.x + 'px, ' + flingOptions.y + 'px, 0)';
-  $holder.style.webkitTransform = transformTranslate;
+  SingleOptions.flingOptions.x = $holder.offsetLeft+SingleOptions.flingOptions.x < 0 ? -$holder.offsetLeft : SingleOptions.flingOptions.x;
+  SingleOptions.flingOptions.y = $holder.offsetTop+SingleOptions.flingOptions.y < 0 ? -$holder.offsetTop : SingleOptions.flingOptions.y;
+  SingleOptions.transformTranslate = 'translate3d(' + SingleOptions.flingOptions.x + 'px, ' + SingleOptions.flingOptions.y + 'px, 0)';
+  $holder.style.webkitTransform = SingleOptions.transformTranslate + SingleOptions.rotateString;
   addLine(event);
 };
 
 function tap(event){
   $holder.style.transition = 'transform .1s ease-out';
-  $holder.style.webkitTransform = transformTranslate + ' scale(1.2, 1.2)';
+  $holder.style.webkitTransform = SingleOptions.transformTranslate + ' scale(1.2, 1.2)' + SingleOptions.rotateString;
   setTimeout( function() {
-      $holder.style.webkitTransform =transformTranslate+ 'scale(1, 1)';
+      $holder.style.webkitTransform =SingleOptions.transformTranslate+ 'scale(1, 1)'+ SingleOptions.rotateString;
     }, 100
   );
   addLine(event);
@@ -61,17 +72,18 @@ function tap(event){
 
 function doubletap(event){
   $holder.style.transition = 'transform .5s ease-out';
-  $holder.style.webkitTransform = transformTranslate +' rotateY(' + (angle) + 'deg)';
-  if (angle == 0) {
-    angle = 180;
+  SingleOptions.rotateString = ' rotateY(' + (SingleOptions.angle) + 'deg)';
+  $holder.style.webkitTransform = SingleOptions.transformTranslate +SingleOptions.rotateString;
+  if (SingleOptions.angle == 0) {
+    SingleOptions.angle = 180;
   } else {
-    angle = 0;
+    SingleOptions.angle = 0;
   }
   addLine(event);
 }
 
 function pinch(event){
-  $holder.style.webkitTransform = transformTranslate + ' scale('+event.zoom+', '+event.zoom+')'
+  $holder.style.webkitTransform = SingleOptions.transformTranslate + ' scale('+event.zoom+', '+event.zoom+')'
   addLine(event);
 }
 
@@ -121,7 +133,7 @@ function getTime() {
     + ((currentdate.getSeconds() < 10) ? "0" + currentdate.getSeconds() : currentdate.getSeconds());
 }
 function onChange() {
-  gesture.doubleGuardState = document.getElementById('checkbox').checked;
+  gesture.setDoubleGuardState(document.getElementById('checkbox').checked);
 }
 
 function onSingleItemClick(){
@@ -129,6 +141,7 @@ function onSingleItemClick(){
   $div.addEventListener(gesture.GESTURE_EVENTS.fling, fling, false);
   $holder.addEventListener(gesture.GESTURE_EVENTS.tap, tap, false);
   $holder.addEventListener(gesture.GESTURE_EVENTS.doubletap, doubletap, false);
+  document.getElementById('checkbox').checked = gesture.getDoubleGuardState();
 }
 
 function onPinchItemClick(){
@@ -147,8 +160,9 @@ function onRotateItemClick(){
 }
 
 function removeEvents(){
-  $holder.style.transition ='transform .1s ease-out';
+  $holder.style.transition ='transform 1s ease-out';
   $holder.style.webkitTransform = "";
+  SingleOptions.clear();
   $div.removeEventListener(gesture.GESTURE_EVENTS.fling, fling, false);
   $holder.removeEventListener(gesture.GESTURE_EVENTS.tap, tap, false);
   $holder.removeEventListener(gesture.GESTURE_EVENTS.doubletap, doubletap, false);
@@ -158,4 +172,3 @@ function removeEvents(){
   $holder.style.transition ='';
 }
 
-init();

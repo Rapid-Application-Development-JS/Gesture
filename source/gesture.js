@@ -9,7 +9,7 @@
     root.GestureTracker = factory();
   }
 }(this, function () {
-  function GestureTracker(element) {
+  function GestureTracker(element, onReadyCallBack) {
 
     function EventTracks() {
       var scope = this,
@@ -111,17 +111,12 @@
         _isrecognized = false;
       };
 
-      GestureTap.prototype = {
-        get doubleGuardState() {
-          return _params.doubleGuardState;
-        },
-        set doubleGuardState(value) {
-          _params.doubleGuardState = value;
-        }
-      };
-      _gesture.setDoubleGuardState = function(state){
-
-      };
+      _gesture.getDoubleGuardState = function() {
+        return _params.doubleGuardState;
+      },
+        _gesture.setDoubleGuardState = function(value) {
+        _params.doubleGuardState = value;
+      }
 
       _gesture.pointerUp = function (event) {
         var track = _tracks.getTrack(event.pointerId);
@@ -534,6 +529,7 @@
     var _element = element,
       _scope = this,
       _gestures = [],
+      _onReadyCallBack = onReadyCallBack,
       _handleEvent = function (event) {
         switch (event.type) {
           case TRACK_EVENTS.down:
@@ -626,6 +622,9 @@
           new GesturePinch(_tracks, _fireEvent),
           new GestureRotate(_tracks, _fireEvent)
         );
+        if(_onReadyCallBack){
+          _onReadyCallBack();
+        }
       });
     }
 
@@ -704,13 +703,11 @@
       _gestures.push(gesture);
     }
 
-    GestureTracker.prototype = {
-      get doubleGuardState() {
-        return _gestures[0].doubleGuardState;
-      },
-      set doubleGuardState(value) {
-        _gestures[0].doubleGuardState = value;
-      }
+    _scope.getDoubleGuardState = function() {
+      return _gestures[0].getDoubleGuardState();
+    };
+    _scope.setDoubleGuardState = function(value) {
+      _gestures[0].setDoubleGuardState(value);
     };
 
   }
