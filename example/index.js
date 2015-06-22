@@ -196,6 +196,7 @@ function removeEvents(){
   $div.removeEventListener(gesture.GESTURE_EVENTS.rotate, rotate, false);
   $div.removeEventListener(gesture.GESTURE_EVENTS.pinch, pinch, false);
   $div.removeEventListener(gesture.GESTURE_EVENTS.pan, pan, false);
+  $holder.removeEventListener(gesture.GESTURE_EVENTS.hold, hold, false);
   $holder.style.transition ='';
 }
 
