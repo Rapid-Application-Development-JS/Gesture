@@ -26,7 +26,7 @@ var $div = document.querySelector('#pointer'),
 
 function init()
 {
-  PanOptions.size = $div.offsetWidth>$div.offsetHeight?$div.offsetHeight/2:$div.offsetWidth/2;
+  PanOptions.size = $div.offsetWidth>$div.offsetHeight?($div.offsetHeight/2):($div.offsetWidth/2);
   PanOptions.size = PanOptions.size - $holder.offsetWidth;
   onSingleItemClick();
 };
@@ -89,6 +89,7 @@ function pinch(event){
 
 function pan(event){
   var x= 0, y= 0;
+  console.log(event.action);
   if(event.action == 'panstart'){
     $holder.style.transition ='';
   }else if(event.action == 'panend'){

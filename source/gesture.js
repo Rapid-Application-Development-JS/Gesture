@@ -578,27 +578,40 @@
 
       _gesture.pointerUp = function (event) {
         if (_isPanStartFired) {
-          var xSpin = event.clientX - _tracks.getTrack(event.pointerId).start.clientX,
-            ySpin = event.clientY - _tracks.getTrack(event.pointerId).start.clientY;
-          _options.action = PanActions.panend;
-          _options.direction = getDirection(xSpin, ySpin);
-          _options.distanceX = xSpin;
-          _options.distanceY = ySpin;
-          fireEvent(_type, event, _options);
+          _fier(PanActions.panend);
           _isPanStartFired = false;
         }
       };
 
-      _gesture.pointerCancel = function (event) {
+      function _fier(action){
+        var xSpin = event.clientX - _tracks.getTrack(event.pointerId).start.clientX,
+          ySpin = event.clientY - _tracks.getTrack(event.pointerId).start.clientY;
+        _options.action = action;
+        _options.direction = getDirection(xSpin, ySpin);
+        _options.distanceX = xSpin;
+        _options.distanceY = ySpin;
+        fireEvent(_type, event, _options);
+      }
 
+      _gesture.pointerCancel = function (event) {
+        if (_isPanStartFired) {
+          _fier(PanActions.panend);
+          _isPanStartFired = false;
+        }
       };
 
       _gesture.pointerLeave = function (event) {
-
+        if (_isPanStartFired) {
+          _fier(PanActions.panend);
+          _isPanStartFired = false;
+        }
       };
 
       _gesture.pointerOut = function (event) {
-
+        if (_isPanStartFired) {
+          _fier(PanActions.panend);
+          _isPanStartFired = false;
+        }
       };
     }
 
