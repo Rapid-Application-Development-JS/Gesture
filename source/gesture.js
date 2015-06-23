@@ -112,10 +112,10 @@
 
       _gesture.getDoubleGuardState = function() {
         return _params.doubleGuardState;
-      },
+      };
         _gesture.setDoubleGuardState = function(value) {
         _params.doubleGuardState = value;
-      }
+      };
 
       _gesture.pointerUp = function (event) {
         var track = _tracks.getTrack(event.pointerId);
@@ -144,6 +144,18 @@
         }
         _isrecognized = false;
       };
+
+      _gesture.pointerCancel = function (event) {
+
+      };
+
+      _gesture.pointerLeave = function (event) {
+
+      };
+
+      _gesture.pointerOut = function (event) {
+
+      };
     }
 
     function GestureHold(tracks, fireEvent) {
@@ -151,34 +163,53 @@
         _holdTimeout = 500,
         _type = _scope.GESTURE_EVENTS.hold,
         _options = {},
+        _isrecognize = false,
         _holdID = null,
         _tracks = tracks;
 
       _gesture.pointerDown = function (event) {
         clearTimeout(_holdTimeout);
         _holdID = setTimeout(function () {
-          _options.action = "holdstart"
-          fireEvent(_type, event, _options);
+          if (!_isrecognize) {
+            _options.action = "holdstart";
+            fireEvent(_type, event, _options);
+            _isrecognize = true;
+          }
 //          _holdID = null;
         }.bind(_gesture), _holdTimeout);
       };
 
-      _gesture.pointerMove = function (event) {
+      function endHold(event) {
         if (_holdID) {
           clearTimeout(_holdID);
-          _options.action = "holdend"
-          fireEvent(_type, event, _options);
+          if (_isrecognize) {
+            _options.action = "holdend";
+            console.log('send holdend from pointerMove');
+            fireEvent(_type, event, _options);
+            _isrecognize = false;
+          }
           _holdID = null;
         }
+      }
+
+      _gesture.pointerMove = function (event) {
+        endHold(event);
       };
 
       _gesture.pointerUp = function (event) {
-        if (_holdID) {
-          clearTimeout(_holdID);
-          _options.action = "holdend"
-          fireEvent(_type, event, _options);
-          _holdID = null;
-        }
+        endHold(event);
+      };
+
+      _gesture.pointerCancel = function (event) {
+        endHold(event);
+      };
+
+      _gesture.pointerLeave = function (event) {
+        endHold(event);
+      };
+
+      _gesture.pointerOut = function (event) {
+        endHold(event);
       };
     }
 
@@ -211,6 +242,18 @@
           _options.speed = distance / _options.duration;
           fireEvent(_type, event, _options);
         }
+      };
+
+      _gesture.pointerCancel = function (event) {
+
+      };
+
+      _gesture.pointerLeave = function (event) {
+
+      };
+
+      _gesture.pointerOut = function (event) {
+
       };
     }
 
@@ -302,6 +345,18 @@
           _options.angle = 0;
           _preCenterPoint = null;
         }
+      };
+
+      _gesture.pointerCancel = function (event) {
+
+      };
+
+      _gesture.pointerLeave = function (event) {
+
+      };
+
+      _gesture.pointerOut = function (event) {
+
       };
     }
 
@@ -401,6 +456,18 @@
           fireEvent(_type, event, _options);
           _isPinchStartFired = false;
         }
+      };
+
+      _gesture.pointerCancel = function (event) {
+
+      };
+
+      _gesture.pointerLeave = function (event) {
+
+      };
+
+      _gesture.pointerOut = function (event) {
+
       };
     }
 
@@ -521,6 +588,18 @@
           _isPanStartFired = false;
         }
       };
+
+      _gesture.pointerCancel = function (event) {
+
+      };
+
+      _gesture.pointerLeave = function (event) {
+
+      };
+
+      _gesture.pointerOut = function (event) {
+
+      };
     }
 
     //-----Constants-----//
@@ -530,7 +609,9 @@
         down: 'pointerdown',
         move: 'pointermove',
         over: 'pointerover',
-        cancel: 'pointercancel'
+        cancel: 'pointercancel',
+        leave: 'pointerleave',
+        out: 'pointerout'
       };
 
     //-----Private variables-----//
@@ -547,6 +628,14 @@
             _pointerMove(event);
             break;
           case TRACK_EVENTS.cancel:
+            _pointerCancel(event);
+            break;
+          case TRACK_EVENTS.leave:
+            _pointerLeave(event);
+            break;
+          case TRACK_EVENTS.out:
+            _pointerOut(event);
+            break;
           case TRACK_EVENTS.up:
             _pointerUp(event);
             break;
@@ -663,7 +752,7 @@
       _currentTouchID = event.pointerId;
       _tracks.setNewEvent(event);
       for (var i = 0; i != _gestures.length; i++) {
-        _gestures[i].pointerDown(event, _tracks);
+        _gestures[i].pointerDown(event, _tracks, _fireEvent);
       }
     }
 
@@ -676,7 +765,7 @@
           isMovedByY = Math.abs(track.last.clientY - track.start.clientY) > MOVE_LIMIT;
           if (isMovedByX || isMovedByY) {
             for (var i = 0; i != _gestures.length; i++) {
-              _gestures[i].pointerMove(event, _tracks);
+              _gestures[i].pointerMove(event, _tracks, _fireEvent);
             }
           }
           _tracks.updateEvent(event, _tracks);
@@ -684,11 +773,41 @@
       }
     }
 
+    function  _pointerLeave(event){
+      if (_tracks.hasEvent(event.pointerId)) {
+        _tracks.setEndEvent(event);
+        for (var i = 0; i != _gestures.length; i++) {
+          _gestures[i].pointerLeave(event, _tracks, _fireEvent);
+        }
+        _tracks.removeEvent(event.pointerId);
+      }
+    }
+
+    function  _pointerCancel(event){
+      if (_tracks.hasEvent(event.pointerId)) {
+        _tracks.setEndEvent(event);
+        for (var i = 0; i != _gestures.length; i++) {
+          _gestures[i].pointerCancel(event, _tracks, _fireEvent);
+        }
+        _tracks.removeEvent(event.pointerId);
+      }
+    }
+
+    function _pointerOut(event){
+      if (_tracks.hasEvent(event.pointerId)) {
+        _tracks.setEndEvent(event);
+        for (var i = 0; i != _gestures.length; i++) {
+          _gestures[i].pointerOut(event, _tracks, _fireEvent);
+        }
+        _tracks.removeEvent(event.pointerId);
+      }
+    }
+
     function _pointerUp(event) {
       if (_tracks.hasEvent(event.pointerId)) {
         _tracks.setEndEvent(event);
         for (var i = 0; i != _gestures.length; i++) {
-          _gestures[i].pointerUp(event, _tracks);
+          _gestures[i].pointerUp(event, _tracks, _fireEvent);
         }
         _tracks.removeEvent(event.pointerId);
       }

@@ -144,30 +144,16 @@ function onSingleItemClick(){
   $holder.addEventListener(gesture.GESTURE_EVENTS.hold, hold, false);
   $checkBox.checked = gesture.getDoubleGuardState();
   $header.style.opacity = 1;
-
-
-  //newNode.style.animationName = "enterPiece";
 }
+
 function hold(event){
-  //$holder.style.animation= 'initial';
-  //$holder.style.webkitAnimationName = "";
   if(event.action === 'holdstart') {
     $holder.style.backgroundColor = '#FFFF00';
+    console.log('hold start catch');
   }else{
+    console.log('hold catch');
     $holder.style.backgroundColor = "rgb(40, 142, 223)";
   }
-  //$holder.style.webkitAnimationPlayState="paused";
-  //$holder.style.webkitAnimationPlayState="running";
-
-  //$holder.style.animationDuration = ".5s";
-  //$holder.style.animationFillMode = "forwards";
-  //$holder.style.animationName = "shake";
-
-
-
-  //$holder.style.animationDuration = "";
-  //$holder.style.animationFillMode ="";
-  //$holder.style.animationName = "";
 }
 
 function onPinchItemClick(){
