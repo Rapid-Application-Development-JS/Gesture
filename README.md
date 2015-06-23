@@ -237,9 +237,6 @@ A `rotate` gesture happens when a user use two fingers to rotate to either a clo
 ```javascript
 $div.addEventListener(gesture.GESTURE_EVENTS.rotate, function (event) {
    switch (event.action) {
-      case 'rotatestart':
-      //
-      breack;
       case  'rotatestart':
       //
       breack;
