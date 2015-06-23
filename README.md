@@ -3,10 +3,7 @@ Gesture events are built on top of the W3C Pointer Events model. Use gesture eve
 
 This module resolves the issue of delay for click events in mobile browsers. A tap event will be fired immediately when user ups a finger.
 
->**Note** Gesture works only with one touch. The multitouch mode is not supported yet. If the user makes a multitouch gesture - the first point will be processed, while the others will be skipped.
-
-
-[Example](http://rapid-application-development-js.github.io/Gesture/)
+[Example](http://rapid-application-development-js.github.io/Gesture/example)
 
 ---
 
@@ -16,6 +13,9 @@ Now the module provides the following tap events:
 - doubletap
 - hold
 - fling
+- pan
+- pinch
+- rotate
 
 >**Warning:** Your widgets should broadcast the following events for the correct work of the `Gesture` module:
 - pointerup
@@ -56,7 +56,65 @@ $div.addEventListener(gesture.GESTURE_EVENTS.tap, function (event) {
 // some code
 });
 ```
+####Custom gestures
+You can add your self gesture to tracker. For this you should use method `addGesture(gesture)`. This method as argument tacks your gestor object. Gesture object must have next public methods:
+```javascript
+gesture.pointerDown(event, tracks, callback);
+gesture.pointerMove(event, tracks, callback);
+gesture.pointerLeave(event, tracks, callback);
+gesture.pointerCancel(event, tracks, callback);
+gesture.pointerUp(event, tracks, callback);
+gesture.pointerOut(event, tracks, callback);
+```
+`event` - contains information about pointer event.
 
+`tracks` - contains information about points which involved in gesture.
+
+`callback` - callback function must be called for broadcast your event. 
+```javascript
+callback(type, event, options);
+```
+`type` - event type (name). You will be subscribe on this event name.
+
+`event` - contains information about pointer event.
+
+`options` - information which will be added to event object.
+
+#####Example
+```javascript
+var tapGesture = {
+  _isrecognized: false,
+
+  pointerDown: function (event, tracks, callback) {
+    this._isrecognized = true;
+  },
+
+  pointerMove: function (event, tracks, callback) {
+    this._isrecognized = false;
+  },
+
+  pointerUp: function (event, tracks, callback) {
+    if (this._isrecognized || ((tracks.getTrack(event.pointerId).end.timeStamp - tracks.getTrack(event.pointerId).start.timeStamp) < 300)) {
+      callback('tap', event, null);
+    }
+    this._isrecognized = false;
+  },
+
+  pointerCancel: function (event, tracks, callback) {
+    this._isrecognized = false;
+  },
+
+  pointerLeave: function (event, tracks, callback) {
+    this._isrecognized = false;
+  },
+
+  pointerOut: function (event, tracks, callback) {
+    this._isrecognized = false;
+  }
+};
+
+gesture.addGesture(tapGesture);
+```
 ###Gestures
 ####tap
 The most basic gesture recognition is a tap. When a tap is detected, the `GesterTraker` event is fired at the target element of the gesture object. Different from the click event, the tap gesture only fires when a user touches (or presses a mouse button, or presses with a stylus pen) down and up without moving. This is useful if you want to differentiate a user tapping on an element versus dragging an element.
@@ -121,3 +179,76 @@ $div.addEventListener(gesture.GESTURE_EVENTS.fling, function (event) {
 ```
 
 The object event has fields specific for the `fling` gesture: `speedX` and `speedX`; they show the speed of the moving finger in pixel/ms.
+
+####pan
+A `pan` gesture happens when a user puts finger on the screen and keep contact as moves it around.
+```javascript
+$div.addEventListener(gesture.GESTURE_EVENTS.pan, function (event) {
+   switch (event.action) {
+      case 'panstart':
+      //
+      breack;
+      case  'panmove':
+      //
+      breack;
+      case  'panend':
+      //
+      breack;
+      case  'panleft':
+      //
+      breack;
+      case  'panright':
+      //
+      breack;
+      case  'panup':
+      //
+      breack;
+      case  'pandown':
+      //
+      breack;
+    }
+});
+```
+####pinch
+A `pinch` gesture happens when a user make a pinching motion with thumb and forefinger on the screen or move them apart.
+```javascript
+$div.addEventListener(gesture.GESTURE_EVENTS.pinch, function (event) {
+   switch (event.action) {
+      case 'pinchstart':
+      //
+      breack;
+      case  'pinchmove':
+      //
+      breack;
+      case  'pinchend':
+      //
+      breack;
+      case  'pinchin':
+      //
+      breack;
+      case  'pinchout':
+      //
+      breack;
+    }
+});
+```
+####rotate
+A `rotate` gesture happens when a user use two fingers to rotate to either a clockwise or counter-clockwise direction.
+```javascript
+$div.addEventListener(gesture.GESTURE_EVENTS.rotate, function (event) {
+   switch (event.action) {
+      case 'rotatestart':
+      //
+      breack;
+      case  'rotatestart':
+      //
+      breack;
+      case  'rotatemove':
+      //
+      breack;
+      case  'rotateend':
+      //
+      breack;
+    }
+});
+```
