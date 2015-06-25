@@ -352,8 +352,8 @@
         var track = _tracks.getTrack(event.pointerId);
         if (_tracks.getCount() < 2) {
           _options.angle = 0;
-          _preCenterPoint = null;
         }
+        _preCenterPoint = null;
       };
 
       _gesture.pointerCancel = function (event) {
