@@ -336,6 +336,9 @@
             _options.action = RotateActions.rotatemove;
             _options.angleSpin = sumAngle;
             _options.angle += sumAngle;
+            if(isNaN(_options.angle)){
+              console.log(_options.angle);
+            }
             fireEvent(_type, event, _options);
           }
           _preCenterPoint = centerPointer;
