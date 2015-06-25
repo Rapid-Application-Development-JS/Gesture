@@ -327,10 +327,10 @@
               currentAngle = (Math.atan2(centerPointer.y - track.last.clientY, centerPointer.x - track.last.clientX) / Math.PI * 180);
               currentAngle = (currentAngle < 0) ? currentAngle + 360 : currentAngle;
               sumAngle += currentAngle - track.pre.angle;
-              track.pre.angle = currentAngle;
               if(isNaN(sumAngle)){
                 console.log(sumAngle);
               }
+              track.pre.angle = currentAngle;
             }
             sumAngle = sumAngle / _tracks.getCount();
             _options.action = RotateActions.rotatemove;
