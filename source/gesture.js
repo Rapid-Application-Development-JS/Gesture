@@ -319,6 +319,9 @@
               currentAngle = (Math.atan2(centerPointer.y - track.last.clientY, centerPointer.x - track.last.clientX) / Math.PI * 180);
               currentAngle = (currentAngle < 0) ? currentAngle + 360 : currentAngle;
               track.pre.angle = currentAngle;
+              if(!currentAngle){
+                console.log(currentAngle);
+              }
             }
             fireEvent(_type, event, _options);
           } else {
