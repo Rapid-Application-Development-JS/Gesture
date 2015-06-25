@@ -328,6 +328,9 @@
               currentAngle = (currentAngle < 0) ? currentAngle + 360 : currentAngle;
               sumAngle += currentAngle - track.pre.angle;
               track.pre.angle = currentAngle;
+              if(!currentAngle){
+                console.log(currentAngle);
+              }
             }
             sumAngle = sumAngle / _tracks.getCount();
             _options.action = RotateActions.rotatemove;
