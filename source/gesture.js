@@ -328,7 +328,7 @@
               currentAngle = (currentAngle < 0) ? currentAngle + 360 : currentAngle;
               sumAngle += currentAngle - track.pre.angle;
               track.pre.angle = currentAngle;
-              if(!currentAngle){
+              if(isNaN(currentAngle)){
                 console.log(currentAngle);
               }
             }
