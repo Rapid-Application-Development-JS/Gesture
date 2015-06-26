@@ -1,7 +1,7 @@
 # Gesture
 Gesture events are built on top of the W3C Pointer Events model. Use gesture events to help recognize and respond to more complex touch-based user interactions without having to capture and interpret individual pointer events yourself.
 
-This module resolves the issue of delay for click events in mobile browsers. A tap event will be fired immediately when user ups a finger.
+This module resolves the issue of delay for click events in mobile browsers. A tap event will be fired immediately when the user lifts the finger.
 
 [Example](http://rapid-application-development-js.github.io/Gesture/example)
 
@@ -49,7 +49,7 @@ $div.addEventListener("tap", function (event) {
 });
 ```
 
-`GesterTraker` has an object `GESTURE_EVENTS` that contains string fields with names of gesture events. You can use it for the subscribe event.
+`GestureTracker` has an object `GESTURE_EVENTS` that contains string fields with names of gesture events. You can use it to subscribe to these events.
 
 ```javascript
 $div.addEventListener(gesture.GESTURE_EVENTS.tap, function (event) {
@@ -57,7 +57,7 @@ $div.addEventListener(gesture.GESTURE_EVENTS.tap, function (event) {
 });
 ```
 ####Custom gestures
-You can add your self gesture to tracker. For this you should use method `addGesture(gesture)`. This method as argument tacks your gestor object. Gesture object must have next public methods:
+You can add your custom gesture to the tracker. You should use method `addGesture(gesture)`. This method takes your gesture object (that contains a description of gesture behavior) as the argument. The gesture object must have the following public methods:
 ```javascript
 gesture.pointerDown(event, tracks, callback);
 gesture.pointerMove(event, tracks, callback);
@@ -66,19 +66,19 @@ gesture.pointerCancel(event, tracks, callback);
 gesture.pointerUp(event, tracks, callback);
 gesture.pointerOut(event, tracks, callback);
 ```
-`event` - contains information about pointer event.
+`event` - contains information about the pointer event.
 
-`tracks` - contains information about points which involved in gesture.
+`tracks` - contains information about points that are involved in the gesture.
 
-`callback` - callback function must be called for broadcast your event. 
+`callback` - callback function must be called to broadcast your event. 
 ```javascript
 callback(type, event, options);
 ```
-`type` - event type (name). You will be subscribe on this event name.
+`type` - event type (name). You will be subscribed to this event name.
 
-`event` - contains information about pointer event.
+`event` - contains information about the pointer event.
 
-`options` - information which will be added to event object.
+`options` - information that will be added to the event object.
 
 #####Example
 ```javascript
@@ -117,9 +117,9 @@ gesture.addGesture(tapGesture);
 ```
 ###Gestures
 ####tap
-The most basic gesture recognition is a tap. When a tap is detected, the `GesterTraker` event is fired at the target element of the gesture object. Different from the click event, the tap gesture only fires when a user touches (or presses a mouse button, or presses with a stylus pen) down and up without moving. This is useful if you want to differentiate a user tapping on an element versus dragging an element.
+The most basic gesture recognition is a tap. When a tap is detected, the `GesterTraker` event is fired at the target element of the gesture object. Different from the click event, the tap gesture only fires when the user touches (or presses a mouse button, or presses with a stylus pen) down and up without moving. This is useful if you want to differentiate a user tapping on an element versus dragging an element.
 ####hold
-A `hold` gesture happens when a user touches down with one finger and holds it during 350ms without moving.
+A `hold` gesture happens when the user touches down with one finger and holds it during 350ms without moving.
 
 ```javascript
 $div.addEventListener(gesture.GESTURE_EVENTS.hold, function (event) {
@@ -134,7 +134,7 @@ gesture.HOLD_TIMEOUT = 500; //set hold delay 500ms
 ```
 
 ####longtap
-A `longtap` gesture happens when a user touches down with one finger and holds it during 300ms or more without moving. The event is fired upon lifting the finger.
+A `longtap` gesture happens when the user touches down with one finger and holds it during 300ms or more without moving. The event is fired upon lifting the finger.
 
 ```javascript
 $div.addEventListener(gesture.GESTURE_EVENTS.longtap, function (event) {
@@ -143,7 +143,7 @@ $div.addEventListener(gesture.GESTURE_EVENTS.longtap, function (event) {
 ```
 
 ####doubletap
-A `doubletap` gesture happens when a user quickly taps the screen twice with one finger, after the finger is lifted for the second time.
+A `doubletap` gesture happens when the user quickly taps the screen twice with one finger, after the finger is lifted for the second time.
 
 ```javascript
 $div.addEventListener(gesture.GESTURE_EVENTS.doubletap, function (event) {
@@ -162,15 +162,15 @@ You should call the `setDoubleGuardState` method with parameter `true` to enable
 gesture.setDoubleGuardState(true);
 ```
 
-In this case, the tap event will be broadcasted with a delay (by default the delay equals 300ms). You can change this value, and you should use the DOUBLE_TAP_TIMEOUT field for this purpose.
+In this case, the tap event will be broadcast with a delay (by default the delay equals 300ms). You can change this value, and you should use the DOUBLE_TAP_TIMEOUT field for this purpose.
 
 ```javascript
 gesture.DOUBLE_TAP_TIMEOUT = 500;//set double tap delay 500ms
 ```
 
-If you set parameter `true` for the `setDoubleGuardState` method - the gesture tracker will broadcast **only** the `doubletap` event (without the `tap` event) if the user makes a gesture, or the `tap` event if the user makes one tap.
+If you set parameter `true` for the `setDoubleGuardState` method, the gesture tracker will broadcast **only** the `doubletap` event (without the `tap` event) if the user makes a gesture, or the `tap` event if the user makes one tap.
 ####fling
-A `fling` gesture happens when a user touches down with one finger and moves it. The event is fired upon lifting the finger.
+A `fling` gesture happens when the user touches down with one finger and moves it. The event is fired upon lifting the finger.
 
 ```javascript
 $div.addEventListener(gesture.GESTURE_EVENTS.fling, function (event) {
@@ -181,7 +181,7 @@ $div.addEventListener(gesture.GESTURE_EVENTS.fling, function (event) {
 The object event has fields specific for the `fling` gesture: `speedX` and `speedX`; they show the speed of the moving finger in pixel/ms.
 
 ####pan
-A `pan` gesture happens when a user puts finger on the screen and keep contact as moves it around.
+A `pan` gesture happens when the user touches the screen with a finger and keeps contact while moving the finger around.
 ```javascript
 $div.addEventListener(gesture.GESTURE_EVENTS.pan, function (event) {
    switch (event.action) {
@@ -210,7 +210,7 @@ $div.addEventListener(gesture.GESTURE_EVENTS.pan, function (event) {
 });
 ```
 ####pinch
-A `pinch` gesture happens when a user make a pinching motion with thumb and forefinger on the screen or move them apart.
+A `pinch` gesture happens when the user makes a pinching (or reverse) motion with a thumb and a forefinger while touching the screen.
 ```javascript
 $div.addEventListener(gesture.GESTURE_EVENTS.pinch, function (event) {
    switch (event.action) {
@@ -233,7 +233,7 @@ $div.addEventListener(gesture.GESTURE_EVENTS.pinch, function (event) {
 });
 ```
 ####rotate
-A `rotate` gesture happens when a user use two fingers to rotate to either a clockwise or counter-clockwise direction.
+A `rotate` gesture happens when the user uses two fingers to rotate the screen while touching it (clockwise or counter-clockwise).
 ```javascript
 $div.addEventListener(gesture.GESTURE_EVENTS.rotate, function (event) {
    switch (event.action) {
