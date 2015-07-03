@@ -624,6 +624,119 @@
       };
     }
 
+    function GestureCurve(tracks, fireEvent) {
+      var _gesture = this,
+        _type = _scope.GESTURE_EVENTS.curve,
+        _options = {},
+        _limit =20,
+        _reliabilityLimit= 70,
+        _isrecognize = false,
+        _previosPoint,
+        _tracks = tracks,
+        _currentCurve = [],
+        _curves = [];
+
+
+      function getPoint(event, point) {
+        var _point = point || {};
+        _point.x = event.clientX;
+        _point.y = event.clientY;
+        return _point;
+      };
+
+      function calculateDistance (x1, x2, y1, y2) {
+        return Math.pow(((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)), 0.5);
+      };
+
+      _gesture.addCurve = function(action, curveMas){
+        _curves[_curves.length] = {action: action, mas: curveMas};
+
+      };
+
+      _gesture.clearCurves = function(){
+        _curves=[];
+      };
+
+      _gesture.pointerDown = function (event) {
+        if(_curves.length>0){
+          _currentCurve = [];
+          _previosPoint = getPoint(event, _previosPoint);
+        }
+      };
+
+
+      _gesture.pointerMove = function (event) {
+        if(_curves.length>0){
+          if(!_previosPoint){
+            _previosPoint = getPoint(event, _previosPoint);
+            return;
+          }else{
+            var distance = calculateDistance(_previosPoint.x, event.clientX, _previosPoint.y, event.clientY);
+            if(distance>_limit){
+              _currentCurve[_currentCurve.length] = {
+                x : event.clientX - _previosPoint.x,
+                y : event.clientY - _previosPoint.y
+              };
+              _previosPoint = getPoint(event, _previosPoint);
+            }
+          }
+        }
+      };
+
+      _gesture.pointerUp = function (event) {
+        if(_curves.length>0) {
+          var distance = calculateDistance(_previosPoint.x, event.clientX, _previosPoint.y, event.clientY);
+          if (distance > _limit) {
+            _currentCurve[_currentCurve.length] = {
+              x: event.clientX - _previosPoint.x,
+              y: event.clientY - _previosPoint.y
+            };
+            _previosPoint = getPoint(event, _previosPoint);
+          }
+          recognize();
+          if(_options.probability >= _reliabilityLimit) {
+            fireEvent(_type, event, _options);
+          }
+        }
+      };
+
+      function recognize() {
+        var mas, length, a, b, angle, result= 0, r, maxResult = 0, curveName;
+        for (var curveIndex = 0; curveIndex != _curves.length; i++) {
+            mas = _curves[curveIndex].mas,
+            length = _currentCurve.length < mas.length ? _currentCurve.length : mas.length;
+          for (var i = 0; i != length; i++) {
+             a = Math.pow((_currentCurve[i].x * _currentCurve[i].x) + (_currentCurve[i].y * _currentCurve[i].y), 0.5),
+              b = Math.pow((mas[i].x * mas[i].x) + (mas[i].y * mas[i].y), 0.5),
+              result = 0,
+              r = a * b === 0 ? 1 : a * b;
+            angle = (((_currentCurve[i].x * mas[i].x) + (_currentCurve[i].y * mas[i].y)) / r) + 1;
+            angle = (angle * 100) / 2;
+            result += angle;
+          }
+          result= result/length;
+          if(maxResult<result){
+            maxResult = result;
+            curveName = _curves[curveIndex].action
+          }
+        }
+        _options.action = curveName;
+        _options.probability = maxResult;
+      }
+
+      _gesture.pointerCancel = function (event) {
+
+      };
+
+      _gesture.pointerLeave = function (event) {
+
+      };
+
+      _gesture.pointerOut = function (event) {
+
+      };
+    }
+
     //-----Constants-----//
     var MOVE_LIMIT,
       TRACK_EVENTS = {
@@ -664,6 +777,7 @@
         }
       }.bind(_scope),
       _tracks = new EventTracks(),
+      _curveGesture,
       _currentTouchID;
 
 
@@ -671,6 +785,7 @@
     _scope.version = "1.1.0";
     _scope.GESTURE_EVENTS = {
       hold: 'hold',
+      curve: 'curve',
       fling: 'fling',
       longtap: 'longtap',
       tap: 'tap',
@@ -733,13 +848,15 @@
         dpi = ppi * _getDevicePixelRatio() * screen.pixelDepth / 24;
         //MOVE_LIMIT = dpi / 6;
         MOVE_LIMIT = 20;
+        _curveGesture = new GestureCurve(_tracks, _fireEvent);
         _gestures.push(
           new GestureTap(_tracks, _fireEvent),
           new GestureHold(_tracks, _fireEvent),
           new GesturePan(_tracks, _fireEvent),
           new GestureFling(_tracks, _fireEvent),
           new GesturePinch(_tracks, _fireEvent),
-          new GestureRotate(_tracks, _fireEvent)
+          new GestureRotate(_tracks, _fireEvent),
+          _curveGesture
         );
         if(_onReadyCallBack){
           _onReadyCallBack();
@@ -847,6 +964,14 @@
       }
       _element = null;
     };
+
+    _scope.addCurve = function(action, curveMas) {
+        _curveGesture.addCurve(action, curveMas);
+    }
+
+    _scope.clearCurves = function(){
+      _curveGesture.clearCurves();
+    }
 
     _scope.addGesture = function (gesture) {
       _gestures.push(gesture);
