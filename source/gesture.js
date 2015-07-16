@@ -1,51 +1,46 @@
 (function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
+  if (typeof define === "function" && define.amd) {
     define(function () {
       return (root.GestureTracker = factory());
     });
-  } else if (typeof module === 'object' && module.exports) {
+  } else if (typeof module === "object" && module.exports) {
     module.exports = (root.GestureTracker = factory());
   } else {
     root.GestureTracker = factory();
   }
 }(this, function () {
   function GestureTracker(element, onReadyCallBack) {
-
     function EventTracks() {
-      var scope = this,
-        _tracks = {},
-        _eventCount = 0;
-
+      /**
+       * @type {EventTracks}
+       */
+      var scope = this;
+      var _tracks = {};
+      var _eventCount = 0;
       scope.getCount = function () {
         return _eventCount;
       };
-
       scope.hasEvent = function (pointerId) {
         return _tracks[pointerId] ? true : false;
       };
-
       scope.setNewEvent = function (event) {
         if (!scope.hasEvent(event.pointerId)) {
           _eventCount++;
         }
         _tracks[event.pointerId] = _createEvent(event);
       };
-
       scope.getTrack = function (pointerId) {
         return _tracks[pointerId];
       };
-
       scope.removeEvent = function (pointerId) {
         if (scope.hasEvent(pointerId)) {
           _eventCount--;
         }
         _tracks[pointerId] = null;
       };
-
       scope.calculateDistance = function (x1, x2, y1, y2) {
         return Math.pow(((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)), 0.5);
       };
-
       scope.updateEvent = function (event) {
         _tracks[event.pointerId].pre.clientX = _tracks[event.pointerId].last.clientX;
         _tracks[event.pointerId].pre.clientY = _tracks[event.pointerId].last.clientY;
@@ -54,13 +49,11 @@
         _tracks[event.pointerId].last.clientY = event.clientY;
         _tracks[event.pointerId].last.timeStamp = event.timeStamp;
       };
-
       scope.setEndEvent = function (event) {
         _tracks[event.pointerId].end.clientX = event.clientX;
         _tracks[event.pointerId].end.clientY = event.clientY;
         _tracks[event.pointerId].end.timeStamp = event.timeStamp;
       };
-
       ////////////////////////////////
       function _createEvent(event) {
         return {
@@ -101,22 +94,18 @@
         _delayTapId,
         _priveosTapTimeStamp,
         _tracks = tracks;
-
       _gesture.pointerDown = function (event) {
         _isrecognized = true;
       };
-
       _gesture.pointerMove = function (event) {
         _isrecognized = false;
       };
-
-      _gesture.getDoubleGuardState = function() {
+      _gesture.getDoubleGuardState = function () {
         return _params.doubleGuardState;
       };
-        _gesture.setDoubleGuardState = function(value) {
+      _gesture.setDoubleGuardState = function (value) {
         _params.doubleGuardState = value;
       };
-
       _gesture.pointerUp = function (event) {
         var track = _tracks.getTrack(event.pointerId);
         if (_isrecognized) {
@@ -144,17 +133,11 @@
         }
         _isrecognized = false;
       };
-
       _gesture.pointerCancel = function (event) {
-
       };
-
       _gesture.pointerLeave = function (event) {
-
       };
-
       _gesture.pointerOut = function (event) {
-
       };
     }
 
@@ -166,7 +149,6 @@
         _isrecognize = false,
         _holdID = null,
         _tracks = tracks;
-
       _gesture.pointerDown = function (event) {
         clearTimeout(_holdTimeout);
         _holdID = setTimeout(function () {
@@ -178,13 +160,12 @@
 //          _holdID = null;
         }.bind(_gesture), _holdTimeout);
       };
-
       function endHold(event) {
         if (_holdID) {
           clearTimeout(_holdID);
           if (_isrecognize) {
             _options.action = "holdend";
-            console.log('send holdend from pointerMove');
+            console.log("send holdend from pointerMove");
             fireEvent(_type, event, _options);
             _isrecognize = false;
           }
@@ -195,19 +176,15 @@
       _gesture.pointerMove = function (event) {
         endHold(event);
       };
-
       _gesture.pointerUp = function (event) {
         endHold(event);
       };
-
       _gesture.pointerCancel = function (event) {
         endHold(event);
       };
-
       _gesture.pointerLeave = function (event) {
         endHold(event);
       };
-
       _gesture.pointerOut = function (event) {
         endHold(event);
       };
@@ -219,16 +196,10 @@
         _options = {},
         _tymeDelay = 50;
       _tracks = tracks;
-
-
       _gesture.pointerDown = function (event) {
-
       };
-
       _gesture.pointerMove = function (event) {
-
       };
-
       _gesture.pointerUp = function (event) {
         var track = _tracks.getTrack(event.pointerId),
           distance = _tracks.calculateDistance(track.end.clientX, track.pre.clientX, track.end.clientY, track.pre.clientY),
@@ -243,17 +214,11 @@
           fireEvent(_type, event, _options);
         }
       };
-
       _gesture.pointerCancel = function (event) {
-
       };
-
       _gesture.pointerLeave = function (event) {
-
       };
-
       _gesture.pointerOut = function (event) {
-
       };
     }
 
@@ -264,9 +229,9 @@
         _preCenterPoint,
         _tracks = tracks,
         RotateActions = {
-          rotatestart: 'rotatestart',
-          rotatemove: 'rotatemove',
-          rotateend: 'rotateend'
+          rotatestart: "rotatestart",
+          rotatemove: "rotatemove",
+          rotateend: "rotateend"
         };
 
       function calculateCenterPoint() {
@@ -297,14 +262,13 @@
           y: minY + (maxY - minY) / 2
         };
         return centerPoint;
-      };
+      }
 
       _gesture.pointerDown = function (event) {
         //if(_tracks.getCount()>1) {
         //  preCenterPoint = calculateCenterPoint();
         //}
       };
-
       _gesture.pointerMove = function (event) {
         if (_tracks.getCount() > 1) {
           var centerPointer = calculateCenterPoint(),
@@ -319,7 +283,7 @@
               currentAngle = (Math.atan2(centerPointer.y - track.last.clientY, centerPointer.x - track.last.clientX) / Math.PI * 180);
               currentAngle = (currentAngle < 0) ? currentAngle + 360 : currentAngle;
               track.pre.angle = currentAngle;
-              if(!currentAngle){
+              if (!currentAngle) {
                 console.log(currentAngle);
               }
             }
@@ -330,7 +294,7 @@
               currentAngle = (Math.atan2(centerPointer.y - track.last.clientY, centerPointer.x - track.last.clientX) / Math.PI * 180);
               currentAngle = (currentAngle < 0) ? currentAngle + 360 : currentAngle;
               sumAngle += currentAngle - track.pre.angle;
-              if(isNaN(sumAngle)){
+              if (isNaN(sumAngle)) {
                 console.log(sumAngle);
               }
               track.pre.angle = currentAngle;
@@ -339,7 +303,7 @@
             _options.action = RotateActions.rotatemove;
             _options.angleSpin = sumAngle;
             _options.angle += sumAngle;
-            if(isNaN(_options.angle)){
+            if (isNaN(_options.angle)) {
               console.log(_options.angle);
             }
             fireEvent(_type, event, _options);
@@ -347,7 +311,6 @@
           _preCenterPoint = centerPointer;
         }
       };
-
       _gesture.pointerUp = function (event) {
         var track = _tracks.getTrack(event.pointerId);
         if (_tracks.getCount() < 2) {
@@ -355,17 +318,11 @@
         }
         _preCenterPoint = null;
       };
-
       _gesture.pointerCancel = function (event) {
-
       };
-
       _gesture.pointerLeave = function (event) {
-
       };
-
       _gesture.pointerOut = function (event) {
-
       };
     }
 
@@ -383,15 +340,15 @@
         },
         _tracks = tracks,
         PinchActions = {
-          pinchstart: 'pinchstart',
-          pinchmove: 'pinchmove',
-          pinchend: 'pinchend',
-          pinchin: 'pinchin',
-          pinchout: 'pinchout'
+          pinchstart: "pinchstart",
+          pinchmove: "pinchmove",
+          pinchend: "pinchend",
+          pinchin: "pinchin",
+          pinchout: "pinchout"
         },
         Directions = {
-          in: 'in',
-          out: 'out'
+          in: "in",
+          out: "out"
         },
         _params = mix({
           threshold: MOVE_LIMIT
@@ -427,15 +384,12 @@
       }
 
       _gesture.pointerDown = function (event) {
-
       };
-
       _gesture.pointerMove = function (event) {
         if (_tracks.getCount() > 1) {
           calculateAverageDistance();
           var zoomSpin = _distance.sumStart - _distance.sumLast,
             currentDirection;
-
           _options.zoom = Math.abs(_distance.sumLast / _distance.sumStart);
           _options.pinchSize = _distance.sumLast;
           _options.pointsCount = _tracks.getCount();
@@ -454,10 +408,8 @@
             _direction = currentDirection;
             fireEvent(_type, event, _options);
           }
-
         }
       };
-
       _gesture.pointerUp = function (event) {
         if (_isPinchStartFired) {
           _options.action = PinchActions.pinchend;
@@ -466,17 +418,11 @@
           _isPinchStartFired = false;
         }
       };
-
       _gesture.pointerCancel = function (event) {
-
       };
-
       _gesture.pointerLeave = function (event) {
-
       };
-
       _gesture.pointerOut = function (event) {
-
       };
     }
 
@@ -490,14 +436,14 @@
         _allowHorizontalDirection,
         _allowVerticalDirectional,
         PanDirection = {
-          horizontal: 'horizontal',
-          vertical: 'vertical',
-          all: 'all',
+          horizontal: "horizontal",
+          vertical: "vertical",
+          all: "all",
           DirectionType: {
-            left: 'left',
-            right: 'right',
-            up: 'up',
-            down: 'down'
+            left: "left",
+            right: "right",
+            up: "up",
+            down: "down"
           }
         },
         _params = mix({
@@ -505,17 +451,15 @@
           threshold: MOVE_LIMIT
         }, params),
         PanActions = {
-          panstart: 'panstart',
-          panmove: 'panmove',
-          panend: 'panend',
-          panleft: 'panleft',
-          panright: 'panright',
-          panup: 'panup',
-          pandown: 'pandown'
+          panstart: "panstart",
+          panmove: "panmove",
+          panend: "panend",
+          panleft: "panleft",
+          panright: "panright",
+          panup: "panup",
+          pandown: "pandown"
         };
-
       init();
-
       function init() {
         _allowHorizontalDirection = _params.direction === PanDirection.all || _params.direction === PanDirection.horizontal;
         _allowVerticalDirectional = _params.direction === PanDirection.all || _params.direction === PanDirection.vertical;
@@ -544,9 +488,7 @@
       }
 
       _gesture.pointerDown = function (event) {
-
       };
-
       _gesture.pointerMove = function (event) {
         var track = _tracks.getTrack(event.pointerId),
           xSpin = event.clientX - track.start.clientX,
@@ -554,7 +496,6 @@
           direction = getDirection(xSpin, ySpin),
           isMovedByX,
           isMovedByY;
-
         if (!_isPanStartFired && direction) {
           isMovedByX = Math.abs(xSpin) > _params.threshold && direction;
           isMovedByY = Math.abs(ySpin) > _params.threshold && direction;
@@ -564,7 +505,6 @@
             _options.distanceX = xSpin;
             _options.distanceY = ySpin;
             fireEvent(_type, event, _options);
-
             _isPanStartFired = true;
             _currentDirection = direction;
             _options.action = _type + direction;
@@ -576,7 +516,6 @@
           _options.distanceX = xSpin;
           _options.distanceY = ySpin;
           fireEvent(_type, event, _options);
-
           if (_currentDirection !== direction) {
             _options.action = _type + direction;
             fireEvent(_type, event, _options);
@@ -584,15 +523,13 @@
           }
         }
       };
-
       _gesture.pointerUp = function (event) {
         if (_isPanStartFired) {
           _fier(PanActions.panend);
           _isPanStartFired = false;
         }
       };
-
-      function _fier(action){
+      function _fier(action) {
         var xSpin = event.clientX - _tracks.getTrack(event.pointerId).start.clientX,
           ySpin = event.clientY - _tracks.getTrack(event.pointerId).start.clientY;
         _options.action = action;
@@ -608,14 +545,12 @@
           _isPanStartFired = false;
         }
       };
-
       _gesture.pointerLeave = function (event) {
         if (_isPanStartFired) {
           _fier(PanActions.panend);
           _isPanStartFired = false;
         }
       };
-
       _gesture.pointerOut = function (event) {
         if (_isPanStartFired) {
           _fier(PanActions.panend);
@@ -628,63 +563,55 @@
       var _gesture = this,
         _type = _scope.GESTURE_EVENTS.curve,
         _options = {},
-        _limit =20,
-        _reliabilityLimit= 70,
+        _limit = 20,
+        _reliabilityLimit = 70,
         _isrecognize = false,
         _previosPoint,
         _tracks = tracks,
         _currentCurve = [],
         _curves = [];
 
-
       function getPoint(event, point) {
         var _point = point || {};
         _point.x = event.clientX;
         _point.y = event.clientY;
         return _point;
-      };
+      }
 
-      function calculateDistance (x1, x2, y1, y2) {
+      function calculateDistance(x1, x2, y1, y2) {
         return Math.pow(((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)), 0.5);
-      };
+      }
 
-      _gesture.addCurve = function(action, curveMas){
+      _gesture.addCurve = function (action, curveMas) {
         _curves[_curves.length] = {action: action, mas: curveMas};
-
       };
-
-      _gesture.clearCurves = function(){
-        _curves=[];
+      _gesture.clearCurves = function () {
+        _curves = [];
       };
-
       _gesture.pointerDown = function (event) {
-        if(_curves.length>0){
+        if (_curves.length > 0) {
           _currentCurve = [];
           _previosPoint = getPoint(event, _previosPoint);
         }
       };
-
-
       _gesture.pointerMove = function (event) {
-        if(_curves.length>0){
-          if(!_previosPoint){
+        if (_curves.length > 0) {
+          if (!_previosPoint) {
             _previosPoint = getPoint(event, _previosPoint);
-            return;
-          }else{
+          } else {
             var distance = calculateDistance(_previosPoint.x, event.clientX, _previosPoint.y, event.clientY);
-            if(distance>_limit){
+            if (distance > _limit) {
               _currentCurve[_currentCurve.length] = {
-                x : event.clientX - _previosPoint.x,
-                y : event.clientY - _previosPoint.y
+                x: event.clientX - _previosPoint.x,
+                y: event.clientY - _previosPoint.y
               };
               _previosPoint = getPoint(event, _previosPoint);
             }
           }
         }
       };
-
       _gesture.pointerUp = function (event) {
-        if(_curves.length>0) {
+        if (_curves.length > 0) {
           var distance = calculateDistance(_previosPoint.x, event.clientX, _previosPoint.y, event.clientY);
           if (distance > _limit) {
             _currentCurve[_currentCurve.length] = {
@@ -694,28 +621,27 @@
             _previosPoint = getPoint(event, _previosPoint);
           }
           recognize();
-          if(_options.probability >= _reliabilityLimit) {
+          if (_options.probability >= _reliabilityLimit) {
             fireEvent(_type, event, _options);
           }
         }
       };
-
       function recognize() {
-        var mas, length, a, b, angle, result= 0, r, maxResult = 0, curveName;
+        var mas, length, a, b, angle, result = 0, r, maxResult = 0, curveName;
         for (var curveIndex = 0; curveIndex != _curves.length; i++) {
-            mas = _curves[curveIndex].mas,
-            length = _currentCurve.length < mas.length ? _currentCurve.length : mas.length;
+          mas = _curves[curveIndex].mas;
+          length = _currentCurve.length < mas.length ? _currentCurve.length : mas.length;
           for (var i = 0; i != length; i++) {
-             a = Math.pow((_currentCurve[i].x * _currentCurve[i].x) + (_currentCurve[i].y * _currentCurve[i].y), 0.5),
-              b = Math.pow((mas[i].x * mas[i].x) + (mas[i].y * mas[i].y), 0.5),
-              result = 0,
-              r = a * b === 0 ? 1 : a * b;
+            a = Math.pow((_currentCurve[i].x * _currentCurve[i].x) + (_currentCurve[i].y * _currentCurve[i].y), 0.5);
+            b = Math.pow((mas[i].x * mas[i].x) + (mas[i].y * mas[i].y), 0.5);
+            result = 0;
+            r = a * b === 0 ? 1 : a * b;
             angle = (((_currentCurve[i].x * mas[i].x) + (_currentCurve[i].y * mas[i].y)) / r) + 1;
             angle = (angle * 100) / 2;
             result += angle;
           }
-          result= result/length;
-          if(maxResult<result){
+          result = result / length;
+          if (maxResult < result) {
             maxResult = result;
             curveName = _curves[curveIndex].action
           }
@@ -725,30 +651,24 @@
       }
 
       _gesture.pointerCancel = function (event) {
-
       };
-
       _gesture.pointerLeave = function (event) {
-
       };
-
       _gesture.pointerOut = function (event) {
-
       };
     }
 
     //-----Constants-----//
     var MOVE_LIMIT,
       TRACK_EVENTS = {
-        up: 'pointerup',
-        down: 'pointerdown',
-        move: 'pointermove',
-        over: 'pointerover',
-        cancel: 'pointercancel',
-        leave: 'pointerleave',
-        out: 'pointerout'
+        up: "pointerup",
+        down: "pointerdown",
+        move: "pointermove",
+        over: "pointerover",
+        cancel: "pointercancel",
+        leave: "pointerleave",
+        out: "pointerout"
       };
-
     //-----Private variables-----//
     var _element = element,
       _scope = this,
@@ -779,25 +699,21 @@
       _tracks = new EventTracks(),
       _curveGesture,
       _currentTouchID;
-
-
     //-----Public variables-----//
     _scope.version = "1.1.0";
     _scope.GESTURE_EVENTS = {
-      hold: 'hold',
-      curve: 'curve',
-      fling: 'fling',
-      longtap: 'longtap',
-      tap: 'tap',
-      doubletap: 'doubletap',
-      pan: 'pan',
-      pinch: 'pinch',
-      rotate: 'rotate'
+      hold: "hold",
+      curve: "curve",
+      fling: "fling",
+      longtap: "longtap",
+      tap: "tap",
+      doubletap: "doubletap",
+      pan: "pan",
+      pinch: "pinch",
+      rotate: "rotate"
     };
     init();
-
     //----------------------------------------
-
     function mix(obj, mixin) {
       var attr;
       for (attr in mixin) {
@@ -809,7 +725,7 @@
     }
 
     function _fireEvent(type, event, addiction) {
-      var attr, customEvent = document.createEvent('MouseEvents');
+      var attr, customEvent = document.createEvent("MouseEvents");
       customEvent.initMouseEvent(type, true, true, window, 1, event.screenX, event.screenY,
         event.clientX, event.clientY, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button,
         event.relatedTarget);
@@ -827,21 +743,19 @@
     }
 
 //------------------Init----------------
-
     function init() {
       _tracks = new EventTracks();
       for (var field in TRACK_EVENTS) {
         //_element.addEventListener(this.TRACK_EVENTS[field], __handleEvent, false);
         getAddListener(_element).call(_element, TRACK_EVENTS[field], _handleEvent, false);
       }
-
       onReady(function () {
-        var element = document.createElement('div'), ppi, dpi;
-        element.style.position = 'absolute';
-        element.style.height = '1in';
-        element.style.width = '1in';
-        element.style.top = '-100%';
-        element.style.left = '-100%';
+        var element = document.createElement("div"), ppi, dpi;
+        element.style.position = "absolute";
+        element.style.height = "1in";
+        element.style.width = "1in";
+        element.style.top = "-100%";
+        element.style.left = "-100%";
         document.body.appendChild(element);
         ppi = element.offsetHeight;
         document.body.removeChild(element);
@@ -858,14 +772,14 @@
           new GestureRotate(_tracks, _fireEvent),
           _curveGesture
         );
-        if(_onReadyCallBack){
+        if (_onReadyCallBack) {
           _onReadyCallBack();
         }
       });
     }
 
     function _getDevicePixelRatio() {
-      return ('devicePixelRatio' in window) ? window['devicePixelRatio'] : 1;
+      return ("devicePixelRatio" in window) ? window["devicePixelRatio"] : 1;
     }
 
     function getAddListener(element) {
@@ -879,7 +793,7 @@
     function onReady(callback) {
       var addListener = getAddListener(document),
         removeListener = getRemoveEventListener(document),
-        eventName = document.addEventListener ? 'DOMContentLoaded' : 'onreadystatechange';
+        eventName = document.addEventListener ? "DOMContentLoaded" : "onreadystatechange";
       addListener.call(document, eventName, function () {
         removeListener.call(document, eventName, arguments.callee, false);
         callback();
@@ -912,7 +826,7 @@
       }
     }
 
-    function  _pointerLeave(event){
+    function _pointerLeave(event) {
       if (_tracks.hasEvent(event.pointerId)) {
         _tracks.setEndEvent(event);
         for (var i = 0; i != _gestures.length; i++) {
@@ -922,7 +836,7 @@
       }
     }
 
-    function  _pointerCancel(event){
+    function _pointerCancel(event) {
       if (_tracks.hasEvent(event.pointerId)) {
         _tracks.setEndEvent(event);
         for (var i = 0; i != _gestures.length; i++) {
@@ -932,7 +846,7 @@
       }
     }
 
-    function _pointerOut(event){
+    function _pointerOut(event) {
       if (_tracks.hasEvent(event.pointerId)) {
         _tracks.setEndEvent(event);
         for (var i = 0; i != _gestures.length; i++) {
@@ -955,7 +869,6 @@
     //====================================================
     //              Public Methods
     //====================================================
-
     _scope.destroy = function () {
       for (var field in this.TRACK_EVENTS) {
         if (TRACK_EVENTS.hasOwnProperty(field)) {
@@ -964,28 +877,23 @@
       }
       _element = null;
     };
-
-    _scope.addCurve = function(action, curveMas) {
-        _curveGesture.addCurve(action, curveMas);
-    }
-
-    _scope.clearCurves = function(){
+    _scope.addCurve = function (action, curveMas) {
+      _curveGesture.addCurve(action, curveMas);
+    };
+    _scope.clearCurves = function () {
       _curveGesture.clearCurves();
-    }
-
+    };
     _scope.addGesture = function (gesture) {
       _gestures.push(gesture);
-    }
-
-    _scope.getDoubleGuardState = function() {
+    };
+    _scope.getDoubleGuardState = function () {
       return _gestures[0].getDoubleGuardState();
     };
-    _scope.setDoubleGuardState = function(value) {
+    _scope.setDoubleGuardState = function (value) {
       _gestures[0].setDoubleGuardState(value);
     };
-
   }
-
+  GestureTracker.version = "1.0.2";
   return GestureTracker;
 }));
 
