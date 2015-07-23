@@ -31,17 +31,11 @@ function init()
   onSingleItemClick();
 };
 
-function addLine(event) {
-  //var $eventElement = document.createElement('div');
-  //$eventElement.innerHTML = getTime() + ': ' + event.type;
-  //$console.insertBefore($eventElement, $console.firstChild);
-};
 //============================================================
 //
 //============================================================
 function rotate(event){
   $holder.style.webkitTransform = 'rotate('+event.angle+'deg)';
-  addLine(event);
 }
 
 function fling(event){
@@ -57,7 +51,6 @@ function fling(event){
   SingleOptions.flingOptions.y = $holder.offsetTop+SingleOptions.flingOptions.y < 0 ? -$holder.offsetTop : SingleOptions.flingOptions.y;
   SingleOptions.transformTranslate = 'translate3d(' + SingleOptions.flingOptions.x + 'px, ' + SingleOptions.flingOptions.y + 'px, 0)';
   $holder.style.webkitTransform = SingleOptions.transformTranslate + SingleOptions.rotateString;
-  addLine(event);
 };
 
 function tap(event){
@@ -67,7 +60,6 @@ function tap(event){
       $holder.style.webkitTransform =SingleOptions.transformTranslate+ 'scale(1, 1)'+ SingleOptions.rotateString;
     }, 100
   );
-  addLine(event);
 }
 
 function doubletap(event){
@@ -79,17 +71,14 @@ function doubletap(event){
   } else {
     SingleOptions.angle = 0;
   }
-  addLine(event);
 }
 
 function pinch(event){
   $holder.style.webkitTransform = SingleOptions.transformTranslate + ' scale('+event.zoom+', '+event.zoom+')'
-  addLine(event);
 }
 
 function pan(event){
   var x= 0, y= 0;
-  console.log(event.action);
   if(event.action == 'panstart'){
     $holder.style.transition ='';
   }else if(event.action == 'panend'){
@@ -122,7 +111,6 @@ function pan(event){
     }
   }
   $holder.style.webkitTransform = 'translate3d(' + x + 'px, ' + y + 'px, 0)';
-  addLine(event);
 }
 //============================================================
 //
@@ -150,9 +138,7 @@ function onSingleItemClick(){
 function hold(event){
   if(event.action === 'holdstart') {
     $holder.style.backgroundColor = '#FFFF00';
-    console.log('hold start catch');
   }else{
-    console.log('hold catch');
     $holder.style.backgroundColor = "rgb(40, 142, 223)";
   }
 }
