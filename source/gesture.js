@@ -629,12 +629,12 @@
       function recognize() {
         var mas, length, a, b, angle, result = 0, r, maxResult = 0, curveName;
         for (var curveIndex = 0; curveIndex != _curves.length; curveIndex++) {
+          result = 0;
           mas = _curves[curveIndex].mas;
           length = _currentCurve.length < mas.length ? _currentCurve.length : mas.length;
           for (var i = 0; i != length; i++) {
             a = Math.pow((_currentCurve[i].x * _currentCurve[i].x) + (_currentCurve[i].y * _currentCurve[i].y), 0.5);
             b = Math.pow((mas[i].x * mas[i].x) + (mas[i].y * mas[i].y), 0.5);
-            result = 0;
             r = a * b === 0 ? 1 : a * b;
             angle = (((_currentCurve[i].x * mas[i].x) + (_currentCurve[i].y * mas[i].y)) / r) + 1;
             angle = (angle * 100) / 2;
