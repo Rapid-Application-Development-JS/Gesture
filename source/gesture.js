@@ -585,6 +585,14 @@
       _gesture.addCurve = function (action, curveMas) {
         _curves[_curves.length] = {action: action, mas: curveMas};
       };
+       _gesture.removeCurve = function (action) {
+        for (var i=0; i < _curves.length; i++) {
+          if (_curves[i].action === action) {
+            _curves.splice(i, 1);
+            break;
+          }
+        }
+      };
       _gesture.clearCurves = function () {
         _curves = [];
       };
@@ -879,6 +887,9 @@
     };
     _scope.addCurve = function (action, curveMas) {
       _curveGesture.addCurve(action, curveMas);
+    };
+    _scope.removeCurve = function (action) {
+      _curveGesture.removeCurve(action);
     };
     _scope.clearCurves = function () {
       _curveGesture.clearCurves();
