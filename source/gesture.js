@@ -628,7 +628,7 @@
       };
       function recognize() {
         var mas, length, a, b, angle, result = 0, r, maxResult = 0, curveName;
-        for (var curveIndex = 0; curveIndex != _curves.length; i++) {
+        for (var curveIndex = 0; curveIndex != _curves.length; curveIndex++) {
           mas = _curves[curveIndex].mas;
           length = _currentCurve.length < mas.length ? _currentCurve.length : mas.length;
           for (var i = 0; i != length; i++) {
