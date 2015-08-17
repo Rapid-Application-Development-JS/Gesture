@@ -187,25 +187,25 @@ $div.addEventListener(gesture.GESTURE_EVENTS.pan, function (event) {
    switch (event.action) {
       case 'panstart':
       //
-      breack;
+      break;
       case  'panmove':
       //
-      breack;
+      break;
       case  'panend':
       //
-      breack;
+      break;
       case  'panleft':
       //
-      breack;
+      break;
       case  'panright':
       //
-      breack;
+      break;
       case  'panup':
       //
-      breack;
+      break;
       case  'pandown':
       //
-      breack;
+      break;
     }
 });
 ```
@@ -216,19 +216,19 @@ $div.addEventListener(gesture.GESTURE_EVENTS.pinch, function (event) {
    switch (event.action) {
       case 'pinchstart':
       //
-      breack;
+      break;
       case  'pinchmove':
       //
-      breack;
+      break;
       case  'pinchend':
       //
-      breack;
+      break;
       case  'pinchin':
       //
-      breack;
+      break;
       case  'pinchout':
       //
-      breack;
+      break;
     }
 });
 ```
@@ -239,13 +239,13 @@ $div.addEventListener(gesture.GESTURE_EVENTS.rotate, function (event) {
    switch (event.action) {
       case  'rotatestart':
       //
-      breack;
+      break;
       case  'rotatemove':
       //
-      breack;
+      break;
       case  'rotateend':
       //
-      breack;
+      break;
     }
 });
 ```
