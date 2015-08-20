@@ -7,7 +7,7 @@ This module resolves the issue of delay for click events in mobile browsers. A t
 
 ---
 
-Now the module provides the following tap events: 
+Now the module provides the following tap events:
 - tap
 - longtap
 - doubletap
@@ -16,6 +16,7 @@ Now the module provides the following tap events:
 - pan
 - pinch
 - rotate
+- curve
 
 >**Warning:** Your widgets should broadcast the following events for the correct work of the `Gesture` module:
 - pointerup
@@ -70,7 +71,7 @@ gesture.pointerOut(event, tracks, callback);
 
 `tracks` - contains information about points that are involved in the gesture.
 
-`callback` - callback function must be called to broadcast your event. 
+`callback` - callback function must be called to broadcast your event.
 ```javascript
 callback(type, event, options);
 ```
@@ -249,3 +250,17 @@ $div.addEventListener(gesture.GESTURE_EVENTS.rotate, function (event) {
     }
 });
 ```
+
+####curve
+A `curve` gesture fires when you make the same(or almost the same) curve as any previously recorded curve.
+To save curves use [Gesture-Recorder](https://github.com/Rapid-Application-Development-JS/Gesture-Recorder) functions `startRecord`, `addNewPoint', `stopRecord`.
+After you saved gestures into [Gesture-Recorder](https://github.com/Rapid-Application-Development-JS/Gesture-Recorder) object you can listen for `curve` to fire:
+
+```javascript
+$div.addEventListener(gesture.GESTURE_EVENTS.curve, function (data) {
+    alert('Gesture found! Title: ' + data.action + ", probability: " + data.probability);
+});
+```
+
+[Gesture-Recorder Example](http://rapid-application-development-js.github.io/Gesture-Recorder/example/)
+
