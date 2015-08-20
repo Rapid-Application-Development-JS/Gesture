@@ -254,7 +254,7 @@ $div.addEventListener(gesture.GESTURE_EVENTS.rotate, function (event) {
 ####curve
 A `curve` gesture fires when you make the same(or almost the same) curve as any previously recorded curve.
 To save curves use [Gesture-Recorder](https://github.com/Rapid-Application-Development-JS/Gesture-Recorder) functions `startRecord`, `addNewPoint`, `stopRecord`.
-After you saved gestures into [Gesture-Recorder](https://github.com/Rapid-Application-Development-JS/Gesture-Recorder) object you can listen for `curve` to fire:
+After you saving curves into [Gesture-Recorder](https://github.com/Rapid-Application-Development-JS/Gesture-Recorder) object you can listen for `curve` event to fire:
 
 ```javascript
 $div.addEventListener(gesture.GESTURE_EVENTS.curve, function (data) {
